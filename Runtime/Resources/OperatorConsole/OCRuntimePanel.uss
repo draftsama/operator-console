@@ -28,6 +28,7 @@
 }
 
 .ocp-head {
+    flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     padding: 22px 28px 10px 28px;
@@ -49,6 +50,7 @@
 }
 
 .ocp-tabs {
+    flex-shrink: 0;
     flex-direction: row;
     align-self: flex-start;
     margin: 0 28px 4px 28px;
@@ -357,6 +359,7 @@
 }
 
 .ocp-foot {
+    flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     padding: 16px 28px;
@@ -555,10 +558,14 @@
 
 .ocp-log {
     flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-height: 0;
     padding: 14px 28px;
 }
 
 .ocp-log__toolbar {
+    flex-shrink: 0;
     flex-direction: row;
     align-items: center;
     margin-bottom: 8px;
@@ -642,6 +649,9 @@
 
 .ocp-log__list {
     flex-grow: 1;
+    flex-shrink: 1;
+    flex-basis: 0;
+    min-height: 0;
 }
 
 .ocp-log__list .unity-collection-view__item,
@@ -739,14 +749,24 @@
     padding: 0 12px 12px 34px;
 }
 
-.ocp .ocp-log-row__full {
-    margin-bottom: 6px;
-    white-space: normal;
-}
-
+.ocp .ocp-log-row__full,
 .ocp .ocp-log-row__stack {
     white-space: normal;
-    color: rgb(153, 161, 176);
+    --unity-cursor-color: rgb(255, 255, 255);
+    --unity-selection-color: rgba(255, 255, 255, 0.3);
+}
+
+.ocp .ocp-log-row__full,
+.ocp .ocp-log-row__full:hover,
+.ocp .ocp-log-row__full:focus {
+    margin-bottom: 6px;
+    color: rgb(238, 240, 244);
+}
+
+.ocp .ocp-log-row__stack,
+.ocp .ocp-log-row__stack:hover,
+.ocp .ocp-log-row__stack:focus {
+    color: rgb(178, 186, 200);
 }
 
 .ocp .ocp-log-row__stack--none {

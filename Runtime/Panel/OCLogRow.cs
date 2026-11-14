@@ -15,6 +15,7 @@ namespace OperatorConsole
         private const float DetailMaxLines = 16f;
         private const float LineHeight = 1.3f;
         private const float DotSize = 10f;
+        private static readonly CustomStyleProperty<Color> SelectionColorProperty = new("--unity-selection-color");
 
         private readonly VisualElement _card = new();
         private readonly VisualElement _main = new();
@@ -52,9 +53,9 @@ namespace OperatorConsole
 
             _detail.AddToClassList("ocp-log-row__detail");
             _fullMessage.AddToClassList("ocp-log-row__full");
-            _fullMessage.selection.isSelectable = true;
             _stack.AddToClassList("ocp-log-row__stack");
-            _stack.selection.isSelectable = true;
+            MakeSelectable(_fullMessage);
+            MakeSelectable(_stack);
             _copy = new Button(CopyEntry) { text = "Copy entry" };
             _copy.AddToClassList("ocp-button");
             _copy.AddToClassList("ocp-log-row__copy");
@@ -132,6 +133,19 @@ namespace OperatorConsole
             var highlight = query.Length > 0;
             label.enableRichText = highlight;
             label.text = highlight ? OCLogMarkup.Highlight(text, query) : text;
+        }
+
+        private static void MakeSelectable(Label label)
+        {
+            label.selection.isSelectable = true;
+            // Unity 6.6 reads --unity-selection-color only for text fields; a selectable Label keeps the default unless it is set here.
+            label.RegisterCallback<CustomStyleResolvedEvent>(e =>
+            {
+                if (!e.customStyle.TryGetValue(SelectionColorProperty, out var color)) return;
+#pragma warning disable CS0618
+                label.selection.selectionColor = color;
+#pragma warning restore CS0618
+            });
         }
 
         private static string NoStackTrace(OCLogType type) => type switch

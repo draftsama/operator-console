@@ -734,7 +734,7 @@ namespace OperatorConsole
 
             var head = new VisualElement();
             head.AddToClassList("ocp-head");
-            _title = new Label("Settings");
+            _title = new Label("Operator Console");
             _title.AddToClassList("ocp-title");
             _pill = new Label(Definition.Name);
             _pill.AddToClassList("ocp-pill");

@@ -35,7 +35,7 @@ namespace OperatorConsole.Editor
         private OCSettingsTab? _settingsTab;
         private string _shownTags = string.Empty;
 
-        [MenuItem("Draft/Operator Console/Open Manager")]
+        [MenuItem("Draft/Operator Console")]
         internal static void Open()
         {
             var window = GetWindow<OCManagerWindow>("Operator Console");

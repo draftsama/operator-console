@@ -25,7 +25,7 @@ isn't installed.
 
 ## Quick start
 
-1. **Draft › Operator Console › Open Manager** — click **Create Config Asset** (creates `Assets/Resources/DSMConfig.asset`), then add Entries (key, type, default, label, exposed flag).
+1. **Draft › Operator Console** — click **Create Config Asset** (creates `Assets/Resources/DSMConfig.asset`), then add Entries (key, type, default, label, exposed flag).
 2. Read and write values from code:
 
 ```csharp
@@ -107,7 +107,7 @@ All members are synchronous and must be called from the main thread.
 ## Config settings
 
 Set on the `OCConfig` asset (`Assets/Resources/DSMConfig.asset`), either in the Inspector or via
-**Draft › Operator Console › Open Manager**:
+**Draft › Operator Console**:
 
 | Field | Default | Description |
 |---|---|---|
@@ -145,7 +145,7 @@ Example Save File — a flat JSON object of only the Overrides that have been se
 
 ## Editor
 
-### Operator Console window (**Draft › Operator Console › Open Manager**)
+### Operator Console window (**Draft › Operator Console**)
 
 A UI Toolkit window with a sidebar for its four sections. It follows the Editor's dark or light skin.
 

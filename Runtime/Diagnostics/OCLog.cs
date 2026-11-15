@@ -20,6 +20,8 @@ namespace OperatorConsole
         private string? _timeText;
         private string? _preview;
         private int _previewLines;
+        private string? _matchedQuery;
+        private bool _matches;
 
         internal OCLogEntry(OCLogType type, string message, string stackTrace, DateTime time)
         {
@@ -58,6 +60,15 @@ namespace OperatorConsole
             }
             _preview = (end < 0 ? Message : Message.Substring(0, end)).Replace("\r", string.Empty);
             return _preview;
+        }
+
+        /// <summary>True when the message or stack trace contains <paramref name="query"/>, ignoring case; cached for the last query asked. Main thread only.</summary>
+        internal bool Matches(string query)
+        {
+            if (_matchedQuery != null && string.Equals(_matchedQuery, query, StringComparison.Ordinal)) return _matches;
+            _matchedQuery = query;
+            _matches = OCLogMarkup.Matches(Message, query) || OCLogMarkup.Matches(StackTrace, query);
+            return _matches;
         }
 
         internal bool IsSameAs(OCLogType type, string message, string stackTrace) =>

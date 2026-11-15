@@ -118,6 +118,27 @@ namespace OperatorConsole.Tests
                 OCLogMarkup.Highlight("<b>x</noparse>", "zzz"));
         }
 
+        [Test]
+        public void Matches_FollowsQueryChanges()
+        {
+            var log = new OCLog();
+            log.Add(OCLogType.Error, "boom", "at Loader.Load", T0);
+            var entry = Entries(log)[0];
+
+            Assert.IsTrue(entry.Matches("loader"));
+            Assert.IsFalse(entry.Matches("network"));
+            Assert.IsTrue(entry.Matches("BOOM"));
+        }
+
+        [TestCase(1, false, 1)]
+        [TestCase(OCLogView.MaxRepeatRows, false, OCLogView.MaxRepeatRows)]
+        [TestCase(OCLogView.MaxRepeatRows + 1, false, 1)]
+        [TestCase(5, true, 1)]
+        public void RowsFor_OneRowPerRepeatUntilTheCap(int count, bool collapse, int expected)
+        {
+            Assert.AreEqual(expected, OCLogView.RowsFor(count, collapse));
+        }
+
         private static List<OCLogEntry> Entries(OCLog log)
         {
             var list = new List<OCLogEntry>();

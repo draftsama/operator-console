@@ -28,7 +28,7 @@ namespace OperatorConsole
             Title = title;
             Description = string.IsNullOrWhiteSpace(options.Description) ? null : options.Description;
             Confirm = options.Confirm;
-            AudienceNames = options.Audiences ?? Array.Empty<string>();
+            TagNames = options.Tags ?? Array.Empty<string>();
             Header = string.IsNullOrWhiteSpace(options.Header) ? null : options.Header;
             Order = options.Order;
             Sequence = sequence;
@@ -41,7 +41,7 @@ namespace OperatorConsole
         public string Title { get; }
         public string? Description { get; }
         public bool Confirm { get; }
-        public IReadOnlyList<string> AudienceNames { get; }
+        public IReadOnlyList<string> TagNames { get; }
         public string? Header { get; }
         public int Order { get; }
 

@@ -58,7 +58,7 @@ namespace OperatorConsole.Editor
         {
             var exposed = Prop("_exposed").boolValue;
             return $"{Type}|{exposed}|{Prop("_hasRange").boolValue}|{Prop("_hasOptions").boolValue}|{Prop("_options").arraySize}|" +
-                   $"{_isExpanded(_index)}|{_context.AudienceNames.Length}|{_context.ValuesEditable}";
+                   $"{_isExpanded(_index)}|{_context.TagNames.Length}|{_context.ValuesEditable}";
         }
 
         private void Build()
@@ -200,14 +200,14 @@ namespace OperatorConsole.Editor
             headerRow.Add(_headerText);
             detail.Add(headerRow);
 
-            if (_context.AudienceNames.Length > 0)
+            if (_context.TagNames.Length > 0)
             {
-                var audienceRow = DetailRow();
-                var mask = OCAudienceEditing.CreateMaskField("Audience", Prop("_audienceIds"), _context.Config, _context.AudienceNames);
-                mask.tooltip = "Runtime Panels serving any of these Audiences show this Entry. None selected: every Runtime Panel shows it.";
+                var tagRow = DetailRow();
+                var mask = OCTagEditing.CreateMaskField("Tag", Prop("_tagIds"), _context.Config, _context.TagNames);
+                mask.tooltip = "Runtime Panels with any of these Tags active show this Entry. None selected: shared, every Runtime Panel shows it.";
                 mask.AddToClassList("oc-grow");
-                audienceRow.Add(mask);
-                detail.Add(audienceRow);
+                tagRow.Add(mask);
+                detail.Add(tagRow);
             }
             return detail;
         }
@@ -336,7 +336,7 @@ namespace OperatorConsole.Editor
             var viewAsIds = _context.ViewAsIds();
             var config = _context.Config;
             EnableInClassList("oc-entry--dimmed",
-                viewAsIds != null && _index < config.Entries.Count && !OCAudienceFilter.Shows(config.Entries[_index], viewAsIds));
+                viewAsIds != null && _index < config.Entries.Count && !OCTagFilter.Shows(config.Entries[_index], viewAsIds));
 
             if (UsesOptions())
             {

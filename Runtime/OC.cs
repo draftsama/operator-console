@@ -72,8 +72,8 @@ public static class OC
     /// <summary>Removes the Overrides of Exposed Entries only, as the Runtime Panel's Reset does; other Overrides survive.</summary>
     public static void ResetExposedEntries() => Store.ResetExposedEntries();
 
-    /// <summary>Removes the Overrides of the Exposed Entries a Runtime Panel serving <paramref name="panelAudienceIds"/> shows; other Overrides survive.</summary>
-    public static void ResetExposedEntries(IReadOnlyList<string> panelAudienceIds) => Store.ResetExposedEntries(panelAudienceIds);
+    /// <summary>Removes the Overrides of the Exposed Entries a Runtime Panel with <paramref name="panelTagIds"/> active shows; other Overrides survive.</summary>
+    public static void ResetExposedEntries(IReadOnlyList<string> panelTagIds) => Store.ResetExposedEntries(panelTagIds);
 
     /// <summary>Synchronously saves all Overrides to the Save File.</summary>
     public static void Save() => Store.Save();

@@ -17,7 +17,7 @@ namespace OperatorConsole.Editor
 
         public OCConfig Config { get; }
         public SerializedObject So { get; }
-        public string[] AudienceNames { get; set; } = Array.Empty<string>();
+        public string[] TagNames { get; set; } = Array.Empty<string>();
         public HashSet<string> DuplicateKeys { get; set; } = new();
         public int ViewAsIndex { get; set; } = -1;
         public string Search { get; set; } = string.Empty;
@@ -25,8 +25,8 @@ namespace OperatorConsole.Editor
         public bool ValuesEditable => OC.Store.Config == Config;
         public SerializedProperty Entries => So.FindProperty("_entries");
 
-        /// <summary>The picked View as Audience's id, or null when View as is All.</summary>
+        /// <summary>The picked View as Tag's id, or null when View as is All.</summary>
         public string[]? ViewAsIds() =>
-            ViewAsIndex >= 0 && ViewAsIndex < Config.Audiences.Count ? new[] { Config.Audiences[ViewAsIndex].Id } : null;
+            ViewAsIndex >= 0 && ViewAsIndex < Config.Tags.Count ? new[] { Config.Tags[ViewAsIndex].Id } : null;
     }
 }

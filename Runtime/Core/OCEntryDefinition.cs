@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OperatorConsole
 {
@@ -22,13 +23,13 @@ namespace OperatorConsole
         [SerializeField] private string _header = string.Empty;
         [SerializeField] private bool _hasOptions;
         [SerializeField] private List<OCOption> _options = new();
-        [SerializeField] private List<string> _audienceIds = new();
+        [SerializeField, FormerlySerializedAs("_audienceIds")] private List<string> _tagIds = new();
 
-        /// <summary>Ids of the Audiences this Entry is meant for; empty means every Audience.</summary>
-        public List<string> AudienceIds
+        /// <summary>Ids of the Tags this Entry names; empty means it is shared and shown on every Runtime Panel.</summary>
+        public List<string> TagIds
         {
-            get => _audienceIds;
-            set => _audienceIds = value;
+            get => _tagIds;
+            set => _tagIds = value;
         }
 
         public bool HasOptions

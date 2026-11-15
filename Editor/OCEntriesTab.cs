@@ -184,7 +184,7 @@ namespace OperatorConsole.Editor
             element.FindPropertyRelative("_header").stringValue = string.Empty;
             element.FindPropertyRelative("_hasOptions").boolValue = false;
             element.FindPropertyRelative("_options").ClearArray();
-            element.FindPropertyRelative("_audienceIds").ClearArray();
+            element.FindPropertyRelative("_tagIds").ClearArray();
             _context.So.ApplyModifiedProperties();
 
             _newKey.SetValueWithoutNotify(string.Empty);

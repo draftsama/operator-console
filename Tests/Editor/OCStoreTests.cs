@@ -251,14 +251,14 @@ namespace OperatorConsole.Tests
         }
 
         [Test]
-        public void ResetExposedEntries_ForAudiences_KeepsOverridesThePanelDoesNotShow()
+        public void ResetExposedEntries_ForTags_KeepsOverridesThePanelDoesNotShow()
         {
             var technician = IntEntry("technicianKey");
             technician.Exposed = true;
-            technician.AudienceIds.Add("technician");
+            technician.TagIds.Add("technician");
             var admin = IntEntry("adminKey");
             admin.Exposed = true;
-            admin.AudienceIds.Add("admin");
+            admin.TagIds.Add("admin");
             var shared = IntEntry("sharedKey");
             shared.Exposed = true;
             var config = NewConfig(technician, admin, shared);

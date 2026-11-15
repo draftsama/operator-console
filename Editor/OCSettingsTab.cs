@@ -7,14 +7,14 @@ using UnityEngine.UIElements;
 
 namespace OperatorConsole.Editor
 {
-    /// <summary>The Manager's Settings tab: the Save File and the Config's Audiences.</summary>
+    /// <summary>The Manager's Settings tab: the Save File and the Config's Tags.</summary>
     internal sealed class OCSettingsTab : VisualElement
     {
         private readonly OCManagerContext _context;
         private readonly TextField _path;
-        private readonly VisualElement _audiences = new();
-        private readonly Button _addAudience;
-        private int _shownAudiences = -1;
+        private readonly VisualElement _tags = new();
+        private readonly Button _addTag;
+        private int _shownTags = -1;
 
         public OCSettingsTab(OCManagerContext context)
         {
@@ -45,11 +45,11 @@ namespace OperatorConsole.Editor
             buttons.Add(delete);
             saveCard.Add(buttons);
 
-            var audienceCard = Section(scroll, "Audiences", "Kinds of operator an Exposed Entry is meant for. Each Runtime Panel picks the Audiences it serves.");
-            audienceCard.Add(_audiences);
-            _addAudience = new Button(AddAudience) { text = "+ Add Audience" };
-            _addAudience.AddToClassList("oc-align-start");
-            audienceCard.Add(_addAudience);
+            var tagCard = Section(scroll, "Tags", "Names that decide on which Runtime Panels an Exposed Entry or Command is shown. Each Runtime Panel starts with its Default Tags; code can change its Active Tags while the app runs.");
+            tagCard.Add(_tags);
+            _addTag = new Button(AddTag) { text = "+ Add Tag" };
+            _addTag.AddToClassList("oc-align-start");
+            tagCard.Add(_addTag);
 
             Refresh();
         }
@@ -57,71 +57,71 @@ namespace OperatorConsole.Editor
         public void Refresh()
         {
             _path.SetValueWithoutNotify(OCPaths.ResolveSaveFilePath(_context.Config));
-            var audiencesProp = _context.So.FindProperty("_audiences");
-            if (audiencesProp.arraySize != _shownAudiences) RebuildAudiences(audiencesProp);
+            var tagsProp = _context.So.FindProperty("_tags");
+            if (tagsProp.arraySize != _shownTags) RebuildTags(tagsProp);
         }
 
-        private void RebuildAudiences(SerializedProperty audiencesProp)
+        private void RebuildTags(SerializedProperty tagsProp)
         {
-            _audiences.Clear();
-            _shownAudiences = audiencesProp.arraySize;
-            _addAudience.SetEnabled(audiencesProp.arraySize < OCAudienceEditing.MaxAudiences);
-            if (audiencesProp.arraySize == 0)
+            _tags.Clear();
+            _shownTags = tagsProp.arraySize;
+            _addTag.SetEnabled(tagsProp.arraySize < OCTagEditing.MaxTags);
+            if (tagsProp.arraySize == 0)
             {
-                var none = new Label("No Audiences: every Runtime Panel shows every Exposed Entry.");
+                var none = new Label("No Tags: every Runtime Panel shows every Exposed Entry.");
                 none.AddToClassList("oc-muted");
-                _audiences.Add(none);
+                _tags.Add(none);
             }
 
-            for (var i = 0; i < audiencesProp.arraySize; i++)
+            for (var i = 0; i < tagsProp.arraySize; i++)
             {
                 var index = i;
-                var audienceProp = audiencesProp.GetArrayElementAtIndex(i);
+                var tagProp = tagsProp.GetArrayElementAtIndex(i);
                 var row = new VisualElement();
                 row.AddToClassList("oc-row");
                 row.AddToClassList("oc-detail-row");
                 var name = new TextField { isDelayed = true };
-                name.BindProperty(audienceProp.FindPropertyRelative("_name"));
+                name.BindProperty(tagProp.FindPropertyRelative("_name"));
                 name.AddToClassList("oc-grow");
-                var remove = new Button(() => TryRemoveAudience(index)) { text = "✕", tooltip = "Remove Audience" };
+                var remove = new Button(() => TryRemoveTag(index)) { text = "✕", tooltip = "Remove Tag" };
                 remove.AddToClassList("oc-icon-button");
                 row.Add(name);
                 row.Add(remove);
-                _audiences.Add(row);
+                _tags.Add(row);
             }
         }
 
-        private void AddAudience()
+        private void AddTag()
         {
-            var audiencesProp = _context.So.FindProperty("_audiences");
-            var index = audiencesProp.arraySize;
-            audiencesProp.InsertArrayElementAtIndex(index);
-            var added = audiencesProp.GetArrayElementAtIndex(index);
-            added.FindPropertyRelative("_id").stringValue = OCAudience.NewId();
-            added.FindPropertyRelative("_name").stringValue = $"Audience {index + 1}";
+            var tagsProp = _context.So.FindProperty("_tags");
+            var index = tagsProp.arraySize;
+            tagsProp.InsertArrayElementAtIndex(index);
+            var added = tagsProp.GetArrayElementAtIndex(index);
+            added.FindPropertyRelative("_id").stringValue = OCTag.NewId();
+            added.FindPropertyRelative("_name").stringValue = $"Tag {index + 1}";
             _context.So.ApplyModifiedProperties();
             Refresh();
         }
 
-        private void TryRemoveAudience(int index)
+        private void TryRemoveTag(int index)
         {
-            var audiencesProp = _context.So.FindProperty("_audiences");
-            var audienceProp = audiencesProp.GetArrayElementAtIndex(index);
-            var id = audienceProp.FindPropertyRelative("_id").stringValue;
-            var name = audienceProp.FindPropertyRelative("_name").stringValue;
+            var tagsProp = _context.So.FindProperty("_tags");
+            var tagProp = tagsProp.GetArrayElementAtIndex(index);
+            var id = tagProp.FindPropertyRelative("_id").stringValue;
+            var name = tagProp.FindPropertyRelative("_name").stringValue;
 
-            var users = OCAudienceEditing.FindUsers(_context.Config, id);
+            var users = OCTagEditing.FindUsers(_context.Config, id);
             if (users.Count > 0)
             {
                 EditorUtility.DisplayDialog(
-                    "Audience in use",
+                    "Tag in use",
                     $"'{name}' can't be removed while it is still named by:\n\n- {string.Join("\n- ", users)}\n\nRemove it from these first.",
                     "OK");
                 return;
             }
 
-            if (!EditorUtility.DisplayDialog("Remove Audience", $"Remove Audience '{name}'?", "Remove", "Cancel")) return;
-            audiencesProp.DeleteArrayElementAtIndex(index);
+            if (!EditorUtility.DisplayDialog("Remove Tag", $"Remove Tag '{name}'?", "Remove", "Cancel")) return;
+            tagsProp.DeleteArrayElementAtIndex(index);
             _context.So.ApplyModifiedProperties();
             Refresh();
         }

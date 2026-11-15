@@ -33,7 +33,7 @@ namespace OperatorConsole.Editor
         private OCPanelsSection? _panelsTab;
         private OCCommandsTab? _commandsTab;
         private OCSettingsTab? _settingsTab;
-        private string _shownAudiences = string.Empty;
+        private string _shownTags = string.Empty;
 
         [MenuItem("Draft/Operator Console/Open Manager")]
         internal static void Open()
@@ -91,8 +91,8 @@ namespace OperatorConsole.Editor
             }
 
             _configSo.Update();
-            _context = new OCManagerContext(_config, _configSo) { AudienceNames = OCAudienceEditing.Names(_config) };
-            _shownAudiences = string.Join("\n", _context.AudienceNames);
+            _context = new OCManagerContext(_config, _configSo) { TagNames = OCTagEditing.Names(_config) };
+            _shownTags = string.Join("\n", _context.TagNames);
 
             var body = new VisualElement();
             body.AddToClassList("oc-body");
@@ -164,7 +164,7 @@ namespace OperatorConsole.Editor
             AddNavItem(nav, Tab.Entries, "Entries", "The Config's Entry Definitions and their current values.");
             AddNavItem(nav, Tab.Panels, "Runtime Panels", "Each enabled Panel Definition becomes one Runtime Panel when the app starts.");
             AddNavItem(nav, Tab.Commands, "Commands", "Registered Commands, listed while in Play mode. Run them here without opening the Runtime Panel.");
-            AddNavItem(nav, Tab.Settings, "Settings", "Save File location and behaviour, and the Config's Audiences.");
+            AddNavItem(nav, Tab.Settings, "Settings", "Save File location and behaviour, and the Config's Tags.");
             return nav;
         }
 
@@ -198,16 +198,16 @@ namespace OperatorConsole.Editor
             });
             bar.Add(_search);
 
-            var choices = new List<string> { "All audiences" };
-            choices.AddRange(_context.AudienceNames);
-            if (_context.ViewAsIndex >= _context.AudienceNames.Length) _context.ViewAsIndex = -1;
+            var choices = new List<string> { "All tags" };
+            choices.AddRange(_context.TagNames);
+            if (_context.ViewAsIndex >= _context.TagNames.Length) _context.ViewAsIndex = -1;
             _viewAs = new PopupField<string>("View as", choices, _context.ViewAsIndex + 1)
             {
-                tooltip = "Grey out the Entries and Commands a Runtime Panel serving this Audience would not show."
+                tooltip = "Grey out the Entries and Commands a Runtime Panel with only this Tag active would not show."
             };
             _viewAs.AddToClassList("oc-view-as");
             _viewAs.RegisterValueChangedCallback(_ => _context!.ViewAsIndex = _viewAs.index - 1);
-            _viewAs.style.display = _context.AudienceNames.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
+            _viewAs.style.display = _context.TagNames.Length > 0 ? DisplayStyle.Flex : DisplayStyle.None;
             bar.Add(_viewAs);
             return bar;
         }
@@ -239,9 +239,9 @@ namespace OperatorConsole.Editor
 
             foreach (var (key, button) in _navButtons)
                 button.EnableInClassList("oc-nav__item--selected", key == tab);
-            var hasAudiences = _context.AudienceNames.Length > 0;
+            var hasTags = _context.TagNames.Length > 0;
             if (_filterBar != null)
-                _filterBar.style.display = tab == Tab.Entries || (tab == Tab.Commands && hasAudiences) ? DisplayStyle.Flex : DisplayStyle.None;
+                _filterBar.style.display = tab == Tab.Entries || (tab == Tab.Commands && hasTags) ? DisplayStyle.Flex : DisplayStyle.None;
             if (_search != null)
                 _search.style.display = tab == Tab.Entries ? DisplayStyle.Flex : DisplayStyle.None;
 
@@ -277,8 +277,8 @@ namespace OperatorConsole.Editor
             }
 
             _context.So.UpdateIfRequiredOrScript();
-            var audiences = OCAudienceEditing.Names(_config);
-            if (string.Join("\n", audiences) != _shownAudiences)
+            var tags = OCTagEditing.Names(_config);
+            if (string.Join("\n", tags) != _shownTags)
             {
                 Rebuild();
                 return;

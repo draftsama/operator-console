@@ -9,24 +9,24 @@ using UnityEngine.UIElements;
 
 namespace OperatorConsole.Editor
 {
-    /// <summary>Editor helpers for picking Audiences by name while storing their ids.</summary>
-    internal static class OCAudienceEditing
+    /// <summary>Editor helpers for picking Tags by name while storing their ids.</summary>
+    internal static class OCTagEditing
     {
         // MaskField packs the selection into an int.
-        public const int MaxAudiences = 32;
+        public const int MaxTags = 32;
 
         public static string[] Names(OCConfig config)
         {
-            var names = new string[config.Audiences.Count];
+            var names = new string[config.Tags.Count];
             for (var i = 0; i < names.Length; i++)
             {
-                var name = config.Audiences[i].Name;
+                var name = config.Tags[i].Name;
                 names[i] = string.IsNullOrWhiteSpace(name) ? $"(unnamed {i + 1})" : name;
             }
             return names;
         }
 
-        /// <summary>A mask field over the Config's Audiences that writes the picked Audiences' ids to <paramref name="idsProp"/> and applies them.</summary>
+        /// <summary>A mask field over the Config's Tags that writes the picked Tags' ids to <paramref name="idsProp"/> and applies them.</summary>
         public static UnityEngine.UIElements.MaskField CreateMaskField(string? label, SerializedProperty idsProp, OCConfig config, string[] names)
         {
             var mask = 0;
@@ -40,8 +40,8 @@ namespace OperatorConsole.Editor
             field.RegisterValueChangedCallback(e =>
             {
                 var ids = new List<string>();
-                for (var i = 0; i < config.Audiences.Count; i++)
-                    if ((e.newValue & (1 << i)) != 0) ids.Add(config.Audiences[i].Id);
+                for (var i = 0; i < config.Tags.Count; i++)
+                    if ((e.newValue & (1 << i)) != 0) ids.Add(config.Tags[i].Id);
 
                 idsProp.arraySize = ids.Count;
                 for (var i = 0; i < ids.Count; i++)
@@ -53,20 +53,20 @@ namespace OperatorConsole.Editor
 
         private static int IndexOf(OCConfig config, string id)
         {
-            for (var i = 0; i < config.Audiences.Count; i++)
-                if (config.Audiences[i].Id == id) return i;
+            for (var i = 0; i < config.Tags.Count; i++)
+                if (config.Tags[i].Id == id) return i;
             return -1;
         }
 
-        /// <summary>Where an Audience is still named: Entries and Panel Definitions in the Config, plus Runtime Panels from before Panel Definitions in prefab / scene files under Assets.</summary>
-        public static List<string> FindUsers(OCConfig config, string audienceId)
+        /// <summary>Where a Tag is still named: Entries and Panel Definitions in the Config, plus Runtime Panels from before Panel Definitions in prefab / scene files under Assets.</summary>
+        public static List<string> FindUsers(OCConfig config, string tagId)
         {
             var users = new List<string>();
-            foreach (var key in OCEntryRules.EntriesNamingAudience(config, audienceId))
+            foreach (var key in OCEntryRules.EntriesNamingTag(config, tagId))
                 users.Add($"Entry '{key}'");
 
             foreach (var panel in config.Panels)
-                if (Contains(panel.AudienceIds, audienceId)) users.Add($"Panel Definition '{panel.Name}'");
+                if (Contains(panel.DefaultTagIds, tagId)) users.Add($"Panel Definition '{panel.Name}'");
 
             // Closed scenes and prefabs aren't loaded, so their files are searched for the id as text.
             var projectRoot = Path.GetDirectoryName(Application.dataPath) ?? string.Empty;
@@ -74,7 +74,7 @@ namespace OperatorConsole.Editor
             {
                 foreach (var file in Directory.EnumerateFiles(Application.dataPath, pattern, SearchOption.AllDirectories))
                 {
-                    if (!File.ReadAllText(file).Contains(audienceId, StringComparison.Ordinal)) continue;
+                    if (!File.ReadAllText(file).Contains(tagId, StringComparison.Ordinal)) continue;
                     var relative = Path.GetRelativePath(projectRoot, file).Replace('\\', '/');
                     users.Add($"Runtime Panel in {relative}");
                 }

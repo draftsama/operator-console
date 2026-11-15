@@ -5,14 +5,14 @@ using UnityEngine;
 
 namespace OperatorConsole
 {
-    /// <summary>A named kind of operator an Exposed Entry is meant for. Entries and Runtime Panels refer to it by <see cref="Id"/>, so renaming changes nothing else.</summary>
+    /// <summary>A name that decides on which Runtime Panels an Exposed Entry or Command is shown. Entries and Runtime Panels refer to it by <see cref="Id"/>, so renaming changes nothing else.</summary>
     [Serializable]
-    public sealed class OCAudience
+    public sealed class OCTag
     {
         [SerializeField] private string _id = string.Empty;
         [SerializeField] private string _name = string.Empty;
 
-        public OCAudience(string id, string name)
+        public OCTag(string id, string name)
         {
             _id = id;
             _name = name;

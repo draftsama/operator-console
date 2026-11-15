@@ -18,10 +18,10 @@ namespace OperatorConsole.Editor
             return null;
         }
 
-        /// <summary>Keys of the Entries that name <paramref name="audienceId"/>, in Config order.</summary>
-        public static List<string> EntriesNamingAudience(OCConfig config, string audienceId) =>
+        /// <summary>Keys of the Entries that name <paramref name="tagId"/>, in Config order.</summary>
+        public static List<string> EntriesNamingTag(OCConfig config, string tagId) =>
             config.Entries
-                .Where(e => e.AudienceIds.Contains(audienceId, StringComparer.Ordinal))
+                .Where(e => e.TagIds.Contains(tagId, StringComparer.Ordinal))
                 .Select(e => e.Key)
                 .ToList();
 

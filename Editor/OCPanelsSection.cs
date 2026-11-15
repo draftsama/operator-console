@@ -18,7 +18,7 @@ namespace OperatorConsole.Editor
         private readonly List<bool> _expanded = new();
         private readonly List<bool> _layoutExpanded = new();
         private readonly List<Card> _shown = new();
-        private string _shownAudiences = string.Empty;
+        private string _shownTags = string.Empty;
         private int _shownCount = -1;
 
         private sealed class Card
@@ -26,7 +26,7 @@ namespace OperatorConsole.Editor
             public Foldout Foldout = null!;
             public Label Summary = null!;
             public HelpBox DuplicateName = null!;
-            public HelpBox? NoAudience;
+            public HelpBox? NoTag;
             public HelpBox KeyWarning = null!;
             public HelpBox Conflicts = null!;
             public HelpBox LockedConflicts = null!;
@@ -67,8 +67,8 @@ namespace OperatorConsole.Editor
         public void Refresh()
         {
             var panelsProp = Panels;
-            var audiences = string.Join("\n", _context.AudienceNames);
-            if (panelsProp.arraySize != _shownCount || audiences != _shownAudiences) Rebuild(panelsProp, audiences);
+            var tags = string.Join("\n", _context.TagNames);
+            if (panelsProp.arraySize != _shownCount || tags != _shownTags) Rebuild(panelsProp, tags);
 
             var config = _context.Config;
             var duplicates = DuplicateNames(panelsProp);
@@ -82,7 +82,7 @@ namespace OperatorConsole.Editor
                 card.Summary.text = i < config.Panels.Count ? Summary(config.Panels[i]) : string.Empty;
                 card.Foldout.EnableInClassList("oc-panel-card--disabled", !enabled);
                 Show(card.DuplicateName, duplicates.Contains(name));
-                if (card.NoAudience != null) Show(card.NoAudience, definition.FindPropertyRelative("_audienceIds").arraySize == 0);
+                if (card.NoTag != null) Show(card.NoTag, definition.FindPropertyRelative("_defaultTagIds").arraySize == 0);
 #if ENABLE_INPUT_SYSTEM
                 Show(card.KeyWarning, !OCKeyMap.TryGetKey((KeyCode)definition.FindPropertyRelative("_toggleKey").intValue, out _));
 #else
@@ -97,10 +97,10 @@ namespace OperatorConsole.Editor
             }
         }
 
-        private void Rebuild(SerializedProperty panelsProp, string audiences)
+        private void Rebuild(SerializedProperty panelsProp, string tags)
         {
             _shownCount = panelsProp.arraySize;
-            _shownAudiences = audiences;
+            _shownTags = tags;
             while (_expanded.Count < _shownCount) _expanded.Add(true);
             if (_expanded.Count > _shownCount) _expanded.RemoveRange(_shownCount, _expanded.Count - _shownCount);
             while (_layoutExpanded.Count < _shownCount) _layoutExpanded.Add(false);
@@ -148,12 +148,12 @@ namespace OperatorConsole.Editor
             general.Add(Field(definition, "_name", "Name", "Code finds this Runtime Panel by this name: OC.Panels.Get(name)."));
             card.DuplicateName = Warning(general, "Another Panel Definition has this name; OC.Panels.Get returns only the first.", HelpBoxMessageType.Error);
             general.Add(Field(definition, "_enabled", "Enabled", "Disabled Panel Definitions create no Runtime Panel."));
-            if (_context.Config.Audiences.Count > 0)
+            if (_context.Config.Tags.Count > 0)
             {
-                var mask = OCAudienceEditing.CreateMaskField("Audiences", definition.FindPropertyRelative("_audienceIds"), _context.Config, _context.AudienceNames);
-                mask.tooltip = "Exposed Entries this Panel shows: those naming any of these Audiences, plus those naming none. None selected: every Exposed Entry.";
+                var mask = OCTagEditing.CreateMaskField("Default Tags", definition.FindPropertyRelative("_defaultTagIds"), _context.Config, _context.TagNames);
+                mask.tooltip = "Exposed Entries this Panel shows: those naming any of these Tags, plus those naming none. None selected: every Exposed Entry.";
                 general.Add(mask);
-                card.NoAudience = Warning(general, "This Panel serves no Audience, so it shows every Exposed Entry, including ones meant for other Audiences.", HelpBoxMessageType.Warning);
+                card.NoTag = Warning(general, "This Panel has no Default Tags, so it starts showing every Exposed Entry, including ones tagged for other panels.", HelpBoxMessageType.Warning);
             }
             general.Add(Field(definition, "_sortOrder", "Sort Order", null));
 

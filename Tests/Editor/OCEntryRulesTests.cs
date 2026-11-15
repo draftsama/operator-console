@@ -40,16 +40,16 @@ namespace OperatorConsole.Tests
             new() { Key = key, Type = type, DefaultJson = OCEntryDefinition.DefaultJsonFor(type) };
 
         [Test]
-        public void EntriesNamingAudience_ListsOnlyEntriesThatNameIt()
+        public void EntriesNamingTag_ListsOnlyEntriesThatNameIt()
         {
             var named = Entry("named", OCDataType.Int);
-            named.AudienceIds.Add("technician");
+            named.TagIds.Add("technician");
             var other = Entry("other", OCDataType.Int);
-            other.AudienceIds.Add("admin");
+            other.TagIds.Add("admin");
             var config = NewConfig(named, other, Entry("untagged", OCDataType.Int));
 
-            CollectionAssert.AreEqual(new[] { "named" }, OCEntryRules.EntriesNamingAudience(config, "technician"));
-            CollectionAssert.IsEmpty(OCEntryRules.EntriesNamingAudience(config, "unused"));
+            CollectionAssert.AreEqual(new[] { "named" }, OCEntryRules.EntriesNamingTag(config, "technician"));
+            CollectionAssert.IsEmpty(OCEntryRules.EntriesNamingTag(config, "unused"));
         }
 
         // ── ValidateNewKey ───────────────────────────────────────────────────

@@ -10,8 +10,8 @@ namespace OperatorConsole
         public string? Description { get; set; }
         public bool Confirm { get; set; }
 
-        /// <summary>Audience names, as declared in the Config. None: every Runtime Panel shows the Command.</summary>
-        public IReadOnlyList<string>? Audiences { get; set; }
+        /// <summary>Tag names, as declared in the Config. None: every Runtime Panel shows the Command.</summary>
+        public IReadOnlyList<string>? Tags { get; set; }
 
         public string? Header { get; set; }
         public int Order { get; set; }

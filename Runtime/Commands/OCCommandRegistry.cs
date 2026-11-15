@@ -85,7 +85,7 @@ namespace OperatorConsole
 
             options ??= new OCCommandOptions();
             var command = new OCRegisteredCommand(owner, title, options, run, _nextSequence++, 0);
-            WarnUnknownAudiences(command);
+            WarnUnknownTags(command);
             _commands.Add(command);
             Sort();
             Changed?.Invoke();
@@ -237,23 +237,23 @@ namespace OperatorConsole
             {
                 Description = attribute.Description,
                 Confirm = attribute.Confirm,
-                Audiences = attribute.Audiences,
+                Tags = attribute.Tags,
                 Header = attribute.Header,
                 Order = attribute.Order
             };
             var command = new OCRegisteredCommand(owner, attribute.Title, options, ct => invoke(target, ct), sequence, method.MetadataToken);
-            WarnUnknownAudiences(command);
+            WarnUnknownTags(command);
             _commands.Add(command);
         }
 
-        private void WarnUnknownAudiences(OCRegisteredCommand command)
+        private void WarnUnknownTags(OCRegisteredCommand command)
         {
             var config = _config();
             if (config == null) return;
-            foreach (var name in command.AudienceNames)
+            foreach (var name in command.TagNames)
             {
-                if (!config.TryGetAudienceByName(name, out _))
-                    Debug.LogWarning($"OC: Command '{command.Title}' names Audience '{name}', which the Config doesn't declare.", command.Owner as Object);
+                if (!config.TryGetTagByName(name, out _))
+                    Debug.LogWarning($"OC: Command '{command.Title}' names Tag '{name}', which the Config doesn't declare.", command.Owner as Object);
             }
         }
 

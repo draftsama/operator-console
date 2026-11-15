@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OperatorConsole
 {
@@ -14,37 +15,37 @@ namespace OperatorConsole
         [SerializeField] private string _saveDirectory = string.Empty;
         [SerializeField] private string _fileName = "save.json";
         [SerializeField] private List<OCEntryDefinition> _entries = new();
-        [SerializeField] private List<OCAudience> _audiences = new();
+        [SerializeField, FormerlySerializedAs("_audiences")] private List<OCTag> _tags = new();
         [SerializeField] private List<OCPanelDefinition> _panels = new();
         [SerializeField, Min(1), Tooltip("Log Entries kept for the Runtime Panel's Log tab; the oldest is dropped when full.")]
         private int _logCapacity = OCLog.DefaultCapacity;
 
-        public IReadOnlyList<OCAudience> Audiences => _audiences;
+        public IReadOnlyList<OCTag> Tags => _tags;
 
         /// <summary>The Panel Definitions the app creates its Runtime Panels from.</summary>
         public IReadOnlyList<OCPanelDefinition> Panels => _panels;
 
-        public bool TryGetAudience(string id, out OCAudience audience)
+        public bool TryGetTag(string id, out OCTag tag)
         {
-            foreach (var a in _audiences)
+            foreach (var a in _tags)
             {
                 if (a.Id != id) continue;
-                audience = a;
+                tag = a;
                 return true;
             }
-            audience = null!;
+            tag = null!;
             return false;
         }
 
-        public bool TryGetAudienceByName(string name, out OCAudience audience)
+        public bool TryGetTagByName(string name, out OCTag tag)
         {
-            foreach (var a in _audiences)
+            foreach (var a in _tags)
             {
                 if (!string.Equals(a.Name, name, System.StringComparison.Ordinal)) continue;
-                audience = a;
+                tag = a;
                 return true;
             }
-            audience = null!;
+            tag = null!;
             return false;
         }
 
@@ -80,7 +81,7 @@ namespace OperatorConsole
 
         public bool RemoveEntry(string key) => _entries.RemoveAll(e => e.Key == key) > 0;
 
-        internal void AddAudienceForTests(OCAudience audience) => _audiences.Add(audience);
+        internal void AddTagForTests(OCTag tag) => _tags.Add(tag);
 
         internal void AddPanelForTests(OCPanelDefinition definition) => _panels.Add(definition);
 

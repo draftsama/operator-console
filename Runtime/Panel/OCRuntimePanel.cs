@@ -72,6 +72,8 @@ namespace OperatorConsole
         private OCLockScreen? _lockScreen;
 
         private readonly List<OCRegisteredCommand> _shownCommands = new();
+        private readonly List<string> _activeTagIds = new();
+        private readonly List<string> _tagIdBuffer = new();
         private readonly List<IOCLayoutAware> _entryLayoutTargets = new();
         private readonly List<IOCLayoutAware> _commandLayoutTargets = new();
         private int _shownEntryCount;
@@ -99,8 +101,49 @@ namespace OperatorConsole
 
         public OCPanelLayout Layout => Definition.Layout;
 
-        /// <summary>Ids of the Audiences this Panel serves; empty means it shows every Exposed Entry.</summary>
-        public IReadOnlyList<string> AudienceIds => Definition.AudienceIds;
+        /// <summary>Ids of the Tags this Panel filters by now; empty means it shows every Exposed Entry. Starts as the Panel Definition's Default Tags and is never saved.</summary>
+        public IReadOnlyList<string> ActiveTagIds => _activeTagIds;
+
+        /// <summary>Goes up by one every time the Active Tags change.</summary>
+        public int ActiveTagsVersion { get; private set; }
+
+        public event Action<OCRuntimePanel>? ActiveTagsChanged;
+
+        /// <summary>Replaces the Active Tags with the Tags named <paramref name="tagNames"/>. False, after logging an error and changing nothing, when no name is given or a name is not declared in the Config.</summary>
+        public bool SetActiveTags(params string[] tagNames) => SetActiveTags((IReadOnlyList<string>)tagNames);
+
+        /// <inheritdoc cref="SetActiveTags(string[])"/>
+        public bool SetActiveTags(IReadOnlyList<string> tagNames)
+        {
+            if (!OCTagFilter.TryResolveNames(Store.Config, tagNames, _tagIdBuffer, out var error))
+            {
+                Debug.LogError($"OC: Runtime Panel '{Name}' kept its Active Tags: {error}", this);
+                return false;
+            }
+            ApplyActiveTags(_tagIdBuffer);
+            return true;
+        }
+
+        /// <summary>Empties the Active Tags, so the panel shows every Exposed Entry and Command.</summary>
+        public void ShowAllTags() => ApplyActiveTags(Array.Empty<string>());
+
+        /// <summary>Returns the Active Tags to the Panel Definition's Default Tags.</summary>
+        public void ResetActiveTags() => ApplyActiveTags(Definition.DefaultTagIds);
+
+        private void ApplyActiveTags(IReadOnlyList<string> tagIds)
+        {
+            if (OCTagFilter.SameSet(_activeTagIds, tagIds)) return;
+            _activeTagIds.Clear();
+            _activeTagIds.AddRange(tagIds);
+            ActiveTagsVersion++;
+            if (IsVisible)
+            {
+                Rebuild();
+                RebuildCommands();
+                ApplyTabs();
+            }
+            ActiveTagsChanged?.Invoke(this);
+        }
 
         private OCPanelDefinition Definition => _definition!;
 
@@ -119,6 +162,7 @@ namespace OperatorConsole
         internal bool Initialize(OCPanelDefinition definition)
         {
             _definition = definition;
+            _activeTagIds.AddRange(definition.DefaultTagIds);
             if (s_theme == null) s_theme = Resources.Load<ThemeStyleSheet>(ThemePath);
             if (s_theme == null)
             {
@@ -387,7 +431,7 @@ namespace OperatorConsole
 
         private void OnResetClicked() => OpenConfirmDialog(ResetConfirmMessage, ResetConfirmButtonText, ResetShownEntries);
 
-        private void ResetShownEntries() => Store.ResetExposedEntries(Definition.AudienceIds);
+        private void ResetShownEntries() => Store.ResetExposedEntries(_activeTagIds);
 
         private void OnRunClicked(OCRegisteredCommand command)
         {
@@ -497,7 +541,7 @@ namespace OperatorConsole
             var registry = OC.Commands;
             foreach (var entry in store.Config.Entries)
             {
-                if (!OCAudienceFilter.Shows(entry, Definition.AudienceIds)) continue;
+                if (!OCTagFilter.Shows(entry, _activeTagIds)) continue;
                 _shownEntryCount++;
 
                 var presentation = OCPresentation.Present(OCHintSettings.From(entry));
@@ -538,7 +582,7 @@ namespace OperatorConsole
             var registry = OC.Commands;
             var config = Store.Config;
             foreach (var command in registry.Commands)
-                if (OCAudienceFilter.Shows(command, Definition.AudienceIds, config)) _shownCommands.Add(command);
+                if (OCTagFilter.Shows(command, _activeTagIds, config)) _shownCommands.Add(command);
 
             if (!EnsureBuilt()) return;
             _commandLayoutTargets.Clear();

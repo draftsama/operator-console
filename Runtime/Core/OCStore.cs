@@ -107,13 +107,13 @@ namespace OperatorConsole
         /// <summary>Removes the Overrides of Exposed Entries only; Overrides of other Entries and of ad-hoc keys survive. Each affected key notifies its Watchers once.</summary>
         public void ResetExposedEntries() => ResetExposedEntries(Array.Empty<string>());
 
-        /// <summary>Removes the Overrides of the Exposed Entries a Runtime Panel serving <paramref name="panelAudienceIds"/> shows (see <see cref="OCAudienceFilter.Shows"/>); every other Override survives. Each affected key notifies its Watchers once.</summary>
-        public void ResetExposedEntries(IReadOnlyList<string> panelAudienceIds)
+        /// <summary>Removes the Overrides of the Exposed Entries a Runtime Panel with <paramref name="panelTagIds"/> active shows (see <see cref="OCTagFilter.Shows"/>); every other Override survives. Each affected key notifies its Watchers once.</summary>
+        public void ResetExposedEntries(IReadOnlyList<string> panelTagIds)
         {
             var before = new Dictionary<string, JToken?>(StringComparer.Ordinal);
             foreach (var entry in _config.Entries)
             {
-                if (OCAudienceFilter.Shows(entry, panelAudienceIds) && _overrides.ContainsKey(entry.Key) && !before.ContainsKey(entry.Key))
+                if (OCTagFilter.Shows(entry, panelTagIds) && _overrides.ContainsKey(entry.Key) && !before.ContainsKey(entry.Key))
                     before[entry.Key] = GetEffectiveToken(entry.Key);
             }
             if (before.Count == 0) return;

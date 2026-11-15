@@ -43,23 +43,31 @@ An optional title on an **Exposed Entry**, shown on the **Runtime Panel** direct
 _Avoid_: section, category, group
 
 **Operator**:
-A person on site who uses a **Runtime Panel** to view and change **Entries** and run **Commands**, whatever **Audience** they belong to.
+A person on site who uses a **Runtime Panel** to view and change **Entries** and run **Commands**.
 _Avoid_: user, admin, player
 
-**Audience**:
-A named kind of **Operator** (e.g. Technician, Admin) that an **Exposed Entry** or a **Command** is meant for. An **Entry** may name several **Audiences**; one naming none is meant for every **Audience**. Every **Audience** is declared once in the **Config**.
-_Avoid_: tag, group, app, category
+**Tag**:
+A name that decides on which **Runtime Panels** an **Exposed Entry** or a **Command** is shown (e.g. Admin, Technician, Profile4). An **Entry** may name several **Tags**; one naming none is shared and shown on every **Runtime Panel**. Every **Tag** is declared once in the **Config**.
+_Avoid_: audience, group, category, label
+
+**Default Tags**:
+The **Tags** a **Runtime Panel** starts with, set in its **Panel Definition**.
+_Avoid_: panel tags, initial tags
+
+**Active Tags**:
+The **Tags** a **Runtime Panel** filters by right now. They start as its **Default Tags**; code may replace them while the app runs and may return them to the **Default Tags**. They are never saved.
+_Avoid_: current tags, runtime tags, selected tags
 
 **Presentation Hint**:
-A **Range**, set of **Options**, **Header**, or set of **Audiences** on an **Exposed Entry**. It changes how and where the **Runtime Panel** shows the **Entry**, never its **Value**.
+A **Range**, set of **Options**, **Header**, or set of **Tags** on an **Exposed Entry**. It changes how and where the **Runtime Panel** shows the **Entry**, never its **Value**.
 _Avoid_: widget setting, UI option
 
 **Runtime Panel**:
-The in-game UI where an operator views and edits **Exposed Entries** and runs **Commands** and **Entry Actions** while the app runs. An app may have more than one, each serving its own **Audiences**.
+The in-game UI where an operator views and edits **Exposed Entries** and runs **Commands** and **Entry Actions** while the app runs. An app may have more than one, each with its own **Active Tags**.
 _Avoid_: config canvas
 
 **Panel Definition**:
-The authored description of one **Runtime Panel** (its **Audiences**, **Open Triggers**, **Panel Lock** and layout), kept in the **Config**. The app creates each **Runtime Panel** from its **Panel Definition** when it starts.
+The authored description of one **Runtime Panel** (its **Default Tags**, **Open Triggers**, **Panel Lock** and layout), kept in the **Config**. The app creates each **Runtime Panel** from its **Panel Definition** when it starts.
 _Avoid_: panel settings, panel profile
 
 **Open Trigger**:
@@ -136,11 +144,13 @@ _Avoid_: counter, stat
 - An **Exposed Entry** of type Int has at most one set of **Options**; with **Options** it shows as a dropdown. **Options** and a **Range** are mutually exclusive (**Options** win). A **Value** matching no **Option** is kept as-is and the dropdown shows it as unrecognised; nothing is written until the operator picks an **Option**.
 - The **Default** of an **Entry** with **Options** is chosen from its **Options** at authoring time; at runtime it is not enforced.
 - An **Exposed Entry** has at most one **Header**; an **Entry** that is not exposed shows no **Header**.
-- An **Entry** that is not exposed is shown to no **Audience**, whatever **Audiences** it names.
-- An **Audience** cannot be removed from the **Config** while any **Entry** or **Runtime Panel** still names it. Renaming an **Audience** changes no **Entry** or **Runtime Panel**.
+- An **Entry** that is not exposed is shown on no **Runtime Panel**, whatever **Tags** it names.
+- A **Tag** cannot be removed from the **Config** while any **Entry** or **Panel Definition** still names it. Renaming a **Tag** changes no **Entry** or **Panel Definition**. Setting **Active Tags** that name an undeclared **Tag** is refused.
 - Which **Presentation Hints** an **Entry** may carry depends on its **Data Type**: a **Range** needs Int or Float, **Options** need Int, a **Header** fits any type.
-- A **Runtime Panel** serves zero or more **Audiences**. It shows an **Exposed Entry** when the **Entry** names no **Audience**, or shares at least one **Audience** with the **Runtime Panel**. A **Runtime Panel** serving no **Audience** shows every **Exposed Entry**.
-- **Audiences** decide only where an **Entry** is shown. An **Entry** a **Runtime Panel** does not show still exists in that app: code can read and set it, and **Bindings** still follow it.
+- A **Runtime Panel** shows an **Exposed Entry** when the **Entry** names no **Tag**, or shares at least one **Tag** with the panel's **Active Tags**. A **Runtime Panel** whose **Active Tags** are empty shows every **Exposed Entry**.
+- **Active Tags** can be emptied only on purpose (show everything), never by setting an empty set of **Tags**.
+- When the **Active Tags** change, the **Runtime Panel** shows the new set at once, even while it is open.
+- **Tags** decide only where an **Entry** is shown. An **Entry** a **Runtime Panel** does not show still exists in that app: code can read and set it, and **Bindings** still follow it.
 - Apps built from one **Config** share **Entry Definitions**, not **Values**: each app has its own **Save File**, so the same **Entry** can hold a different **Value** in each app.
 - A **Reset** from a **Runtime Panel** covers only the **Exposed Entries** that **Runtime Panel** shows, and only after the operator confirms; **Overrides** of every other **Entry** and of _ad-hoc keys_ survive it.
 - The **Config** holds zero or more **Panel Definitions**, each with a unique name. The app creates one **Runtime Panel** per enabled **Panel Definition** when it starts, and that **Runtime Panel** lasts until the app quits, across scene loads. With no enabled **Panel Definition** there is no **Runtime Panel**.
@@ -148,8 +158,8 @@ _Avoid_: counter, stat
 - Two **Panel Definitions** may share an **Open Trigger**; one use of it then opens both **Runtime Panels**, except that at most one **Lock Screen** is shown at a time: of the **Runtime Panels** with a **Panel Lock**, only the first in the **Config**'s order opens.
 - A **Panel Lock** guards only the **Open Triggers**; code that opens a **Runtime Panel** directly is not asked for the **Passcode**. A wrong **Passcode** can be retried without limit. A **Runtime Panel** with a **Panel Lock** but no **Lock Screen** refuses to open from its **Open Triggers**.
 - While its **Lock Screen** is up, a **Runtime Panel** counts as open to the rest of the app, as it does once unlocked.
-- A **Runtime Panel** with a **Panel Lock** and one without can serve different **Audiences** in the same app (e.g. a locked Admin panel beside an open Technician panel).
-- A **Command** names zero or more **Audiences** and is shown by the same rule as an **Exposed Entry**. Unlike an **Entry**, it names them by name, so renaming an **Audience** drops it from **Commands** that named the old name.
+- A **Runtime Panel** with a **Panel Lock** and one without can have different **Active Tags** in the same app (e.g. a locked Admin panel beside an open Technician panel).
+- A **Command** names zero or more **Tags** and is shown by the same rule as an **Exposed Entry**. Unlike an **Entry**, it names them by name, so renaming a **Tag** drops it from **Commands** that named the old name.
 - A **Command** may require confirmation; the operator then confirms before it runs.
 - Each owner registers its own **Commands**, so two owners of the same kind give two **Registered Commands** with the same **Title**; the **Runtime Panel** tells them apart by owner.
 - A **Command** keeps running when the **Runtime Panel** closes. It is stopped when its owner unregisters. While it runs it cannot be run again; other **Commands** can.
@@ -159,7 +169,7 @@ _Avoid_: counter, stat
 - A **Command** never changes a **Value** by being run through the **Runtime Panel**; anything it changes, it changes through code like any other caller.
 - A **Binding** has one or more **Links**. A **Link** whose member takes the **Entry**'s own **Data Type** receives the **Value** as-is; only when no such member exists does a text member receive it through the **Format**.
 - A **Key** used in code without an **Entry Definition** is an _ad-hoc key_: it works and persists like any **Override**, but is never added to the **Config** automatically.
-- An **Entry Action** names its **Entry** by **Key** and must produce a **Value** of that **Entry**'s **Data Type**. It is shown wherever its **Entry** is shown and nowhere else; it has no **Audiences** or **Header** of its own.
+- An **Entry Action** names its **Entry** by **Key** and must produce a **Value** of that **Entry**'s **Data Type**. It is shown wherever its **Entry** is shown and nowhere else; it has no **Tags** or **Header** of its own.
 - An **Entry Action** is given the **Entry**'s current **Value** when it starts. When it finishes, its result is set exactly as if the operator had typed it: it becomes an **Override** at once, and saving follows the usual rules. A cancelled **Entry Action** leaves the **Value** unchanged. Its result is set even if the **Value** changed while it ran: the last write wins.
 - One **Entry** may have several **Entry Actions**. While any of them runs, that **Entry**'s row on the **Runtime Panel** is locked: no other of its **Entry Actions** and no typing.
 - An **Entry Action** may require confirmation, like a **Command**. It keeps running when the **Runtime Panel** closes and is stopped when its owner unregisters, like a **Command**. Two owners giving one **Entry** an **Entry Action** with the same **Title** are told apart by owner, like **Commands**.

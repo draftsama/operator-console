@@ -118,11 +118,11 @@ namespace OperatorConsole.Tests
         }
 
         [Test]
-        public void Register_WarnsAboutUnknownAudienceName()
+        public void Register_WarnsAboutUnknownTagName()
         {
-            LogAssert.Expect(LogType.Warning, new Regex("names Audience 'Ghost'"));
+            LogAssert.Expect(LogType.Warning, new Regex("names Tag 'Ghost'"));
 
-            _registry.Register(new object(), "Command", _ => UniTask.CompletedTask, new OCCommandOptions { Audiences = new[] { "Ghost" } });
+            _registry.Register(new object(), "Command", _ => UniTask.CompletedTask, new OCCommandOptions { Tags = new[] { "Ghost" } });
         }
 
         [Test]

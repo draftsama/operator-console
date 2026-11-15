@@ -1,5 +1,7 @@
 # Audiences filter Runtime Panels; apps share one Config
 
+Superseded in part by ADR 0010: Audiences are now Tags, and a Runtime Panel's Active Tags can change at runtime. The one-Config decision below still holds.
+
 Some projects build several apps (e.g. Admin and Display) that each need a different set of
 Exposed Entries on their Runtime Panel, with some Entries in common. We keep one Config for every
 build and let each Runtime Panel pick the Audiences it serves, instead of a Config per app or

@@ -90,7 +90,7 @@ namespace OperatorConsole.Editor
             var viewAsIds = _context.ViewAsIds();
             foreach (var (command, card, status, error, run) in _cards)
             {
-                card.EnableInClassList("oc-entry--dimmed", viewAsIds != null && !OCAudienceFilter.Shows(command, viewAsIds, _context.Config));
+                card.EnableInClassList("oc-entry--dimmed", viewAsIds != null && !OCTagFilter.Shows(command, viewAsIds, _context.Config));
                 status.text = command.Status switch
                 {
                     OCCommandStatus.Running => "◌",

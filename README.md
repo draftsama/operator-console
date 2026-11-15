@@ -151,18 +151,18 @@ A UI Toolkit window with a sidebar for its four sections. It follows the Editor'
 
 - **Entries** — one row per Entry Definition: type, key and label, default value, current value
   (a dot marks an Override), and Reset. Click a row's key to show its settings: key, type, label,
-  Exposed, Slider (Int/Float), Dropdown Options (Int), Header and Audience, plus Remove Entry.
+  Exposed, Slider (Int/Float), Dropdown Options (Int), Header and Tag, plus Remove Entry.
   Duplicate keys are highlighted and reported. Drag a row by its handle to reorder it — that order
   is the Runtime Panel order (reordering is off while searching). **Search** filters by key or
-  label; **View as** dims the Entries that Audience's Runtime Panel would not show.
+  label; **View as** dims the Entries that Tag's Runtime Panel would not show.
 - **Add Entry** (bottom bar) — key and type for a new Entry Definition, next to Reset All Values
   and a live count of current Overrides.
 - **Runtime Panels** — one card per Panel Definition (see below).
 - **Commands** — in Play mode, every Registered Command with its status and a Run button (it asks first
-  when the Command has `Confirm`). **View as** dims the Commands that Audience's Runtime Panel would not show.
+  when the Command has `Confirm`). **View as** dims the Commands that Tag's Runtime Panel would not show.
 - **Settings** — edits AutoSave, AutoSave Debounce, Save Directory, and File Name on the Config
   asset; shows the resolved Save File path with buttons to open its folder or delete the file; and
-  lists the Config's Audiences.
+  lists the Config's Tags.
 
 In Edit mode, changing an Entry's current value saves the Save File immediately. In Play mode,
 value edits are live on the running `OC.Store` and persisted whenever AutoSave next fires (or on
@@ -195,6 +195,25 @@ Code finds a panel by its Panel Definition's **Name**: `OC.Panels.Get("Admin")` 
 warning when no panel has that name), `OC.Panels.TryGet`, `OC.Panels.All`, `OC.Panels.HideAll()`.
 Renaming a Panel Definition breaks code that used the old name. `OCRuntimePanel.IsOpen` is true while
 any panel or its Lock Screen is open.
+
+### Tags
+
+Each Exposed Entry and Command may name **Tags**; one naming none is shared and shows on every panel.
+A panel starts with its Panel Definition's **Default Tags** and filters by its **Active Tags**, which
+code can replace while the app runs (e.g. per app, or per layout the app shows). Active Tags are
+never saved; the panel rebuilds at once if it is open. See [ADR 0010](docs/adr/0010-tags-replace-audiences.md).
+
+```csharp
+var panel = OC.Panels.Get("Main");
+panel.SetActiveTags("Display", "Profile4"); // by name; false and an error for none or an undeclared Tag
+panel.ResetActiveTags();                    // back to the Default Tags
+panel.ShowAllTags();                        // show every Exposed Entry, on purpose
+panel.ActiveTagsChanged += p => { };
+```
+
+Without code, add **Operator Console › Active Tags** (`OCActiveTags`) to a scene: it sets the named
+panel's Active Tags while it is enabled and returns them to the Default Tags when it is disabled,
+unless something else changed them since.
 
 Panel Definition edits made in the Manager during Play mode apply at once and, because the Config is
 an asset, are kept after Play mode ends. Adding or removing a Panel Definition takes effect the next time
@@ -311,7 +330,7 @@ public sealed class Projector : MonoBehaviour
     [OCCommand("Reconnect", Description = "Drops the link and opens it again.", Header = "Projectors")]
     private async UniTask Reconnect(CancellationToken ct) { /* ... */ }
 
-    [OCCommand("Show test pattern", Confirm = true, Audiences = new[] { "Technician" }, Order = 10)]
+    [OCCommand("Show test pattern", Confirm = true, Tags = new[] { "Display" }, Order = 10)]
     private void ShowTestPattern() { /* ... */ }
 }
 ```
@@ -330,7 +349,7 @@ public sealed class Projector : MonoBehaviour
 - **Header** — starts a visual group; consecutive Commands with the same Header show it once.
 - **Same Title twice** — two owners that register the same Title (two projectors) show as
   `Reconnect (Projector L)` and `Reconnect (Projector R)`, from the owners' GameObject names.
-- **Audiences** — named by **name** (not id) because an attribute can't hold an id. Renaming an Audience
+- **Tags** — named by **name** (not id) because an attribute can't hold an id. Renaming a Tag
   in the Config drops it from Commands that named the old name; an unknown name is warned about at
   `Register` and matches no Runtime Panel. Same rule as Entries otherwise.
 - **Confirm** — reuses the panel's confirm popup (`Run "<Title>"?`).
@@ -373,7 +392,7 @@ public sealed class ContentFolders : MonoBehaviour
 - **Leave the Value alone** — throw `OperationCanceledException` (e.g. the operator closed the dialog).
 - **Result** — set exactly as if the operator typed it: an Override at once, saved by the usual rules.
   It is set even if the Value changed while the action ran (last write wins).
-- **Where it shows** — wherever its Entry shows; it has no Audiences or Header of its own. An unknown
+- **Where it shows** — wherever its Entry shows; it has no Tags or Header of its own. An unknown
   Key or a non-Exposed Entry is warned about at `Register`.
 - **While running** — the whole row is locked (input and its other actions) and the button reads
   `Running…`. A failure shows its message on a line under the row.

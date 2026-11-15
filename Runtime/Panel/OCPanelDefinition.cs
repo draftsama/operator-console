@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace OperatorConsole
 {
@@ -13,7 +14,7 @@ namespace OperatorConsole
         [SerializeField] private string _name = "Panel";
         [SerializeField] private bool _enabled = true;
         [SerializeField, Tooltip("UI Toolkit panel sort order; higher draws on top.")] private int _sortOrder = 1000;
-        [SerializeField] private List<string> _audienceIds = new();
+        [SerializeField, FormerlySerializedAs("_audienceIds")] private List<string> _defaultTagIds = new();
         [SerializeField, Tooltip("Auto shows the Save button only when AutoSave is off. Always / Never force it on / off.")]
         private OCSaveButtonMode _saveButtonMode = OCSaveButtonMode.Auto;
         [SerializeField, Tooltip("Open and close the panel with Toggle Key.")] private bool _hotkeyEnabled = true;
@@ -41,8 +42,8 @@ namespace OperatorConsole
         public bool Enabled => _enabled;
         public int SortOrder => _sortOrder;
 
-        /// <summary>Ids of the Audiences this Runtime Panel serves; empty means it shows every Exposed Entry.</summary>
-        public IReadOnlyList<string> AudienceIds => _audienceIds;
+        /// <summary>Ids of the Tags the Runtime Panel starts with as its Active Tags; empty means it shows every Exposed Entry.</summary>
+        public IReadOnlyList<string> DefaultTagIds => _defaultTagIds;
 
         public OCSaveButtonMode SaveButtonMode => _saveButtonMode;
         public bool HotkeyEnabled => _hotkeyEnabled;

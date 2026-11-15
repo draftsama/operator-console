@@ -23,7 +23,7 @@ public static class DSM
     public static void Reset(string key) => OC.Reset(key);
     public static void ResetAll() => OC.ResetAll();
     public static void ResetExposedEntries() => OC.ResetExposedEntries();
-    public static void ResetExposedEntries(IReadOnlyList<string> panelAudienceIds) => OC.ResetExposedEntries(panelAudienceIds);
+    public static void ResetExposedEntries(IReadOnlyList<string> panelTagIds) => OC.ResetExposedEntries(panelTagIds);
     public static void Save() => OC.Save();
     public static void Load() => OC.Load();
     public static IUniTaskAsyncEnumerable<T> WatchAsync<T>(string key) => OC.WatchAsync<T>(key);

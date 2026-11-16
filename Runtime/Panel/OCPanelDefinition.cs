@@ -27,6 +27,8 @@ namespace OperatorConsole
         private bool _showLog;
         [SerializeField, Tooltip("Show the Performance tab: frame rate, frame time and memory, measured from app start.")]
         private bool _showPerformance;
+        [SerializeField, Tooltip("Show the Display tab: the app's window mode, size, position and monitor. Works in a Windows build only.")]
+        private bool _showDisplay;
         [SerializeField] private OCPanelLayout _layout = new();
 
         public OCPanelDefinition() { }
@@ -53,6 +55,7 @@ namespace OperatorConsole
         public bool StartVisible => _startVisible;
         public bool ShowLog => _showLog;
         public bool ShowPerformance => _showPerformance;
+        public bool ShowDisplay => _showDisplay;
         public OCPanelLayout Layout => _layout;
     }
 }

@@ -96,12 +96,14 @@ public static class OC
 
     private static OCStore CreateDefault()
     {
-        var config = Resources.Load<OCConfig>("DSMConfig");
+        var config = OCPaths.LoadConfig();
         if (config == null)
         {
             config = ScriptableObject.CreateInstance<OCConfig>();
-            Debug.LogWarning("OC: no OCConfig named DSMConfig found in Resources — using an empty config.");
+            Debug.LogWarning($"OC: no OCConfig named {OCPaths.ConfigResourceName} found in Resources — using an empty config.");
         }
+
+        OCPaths.MoveLegacySaveFile(config);
 
         var store = new OCStore(config);
         store.Load();

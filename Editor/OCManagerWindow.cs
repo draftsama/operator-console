@@ -64,7 +64,7 @@ namespace OperatorConsole.Editor
         // Reload button re-reads the Save File.
         private void Load(bool fromDisk)
         {
-            _config = Resources.Load<OCConfig>("DSMConfig");
+            _config = OCPaths.LoadConfig();
             _configSo = _config != null ? new SerializedObject(_config) : null;
             if (_config != null && fromDisk) OC.Load();
             Rebuild();
@@ -216,7 +216,7 @@ namespace OperatorConsole.Editor
         {
             var empty = new VisualElement();
             empty.AddToClassList("oc-empty");
-            var title = new Label("No DSMConfig in Resources");
+            var title = new Label($"No {OCPaths.ConfigResourceName} in Resources");
             title.AddToClassList("oc-empty__title");
             var text = new Label("Create a Config asset to start adding Entries and Runtime Panels.");
             text.AddToClassList("oc-muted");
@@ -266,7 +266,7 @@ namespace OperatorConsole.Editor
             UpdateMode();
             if (_context == null)
             {
-                if (Resources.Load<OCConfig>("DSMConfig") != null) Load(fromDisk: false);
+                if (OCPaths.LoadConfig() != null) Load(fromDisk: false);
                 return;
             }
 

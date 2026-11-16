@@ -11,15 +11,13 @@ namespace OperatorConsole.Editor
     [CustomEditor(typeof(OCBinding))]
     internal sealed class OCBindingEditor : UnityEditor.Editor
     {
-        private const string ConfigResourcePath = "DSMConfig";
-
         public override void OnInspectorGUI()
         {
             serializedObject.Update();
 
             var binding = (OCBinding)target;
             var gameObject = binding.gameObject;
-            var config = Resources.Load<OCConfig>(ConfigResourcePath);
+            var config = OCPaths.LoadConfig();
 
             var keyProp = serializedObject.FindProperty("_key");
             var linksProp = serializedObject.FindProperty("_links");
@@ -71,7 +69,7 @@ namespace OperatorConsole.Editor
         {
             if (config == null)
             {
-                EditorGUILayout.HelpBox("No OCConfig named DSMConfig found in Resources. Falling back to a plain key field.", MessageType.Warning);
+                EditorGUILayout.HelpBox($"No OCConfig named {OCPaths.ConfigResourceName} found in Resources. Falling back to a plain key field.", MessageType.Warning);
                 EditorGUILayout.PropertyField(keyProp, new GUIContent("Key"));
                 return null;
             }

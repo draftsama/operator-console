@@ -25,7 +25,7 @@ isn't installed.
 
 ## Quick start
 
-1. **Draft › Operator Console** — click **Create Config Asset** (creates `Assets/Resources/DSMConfig.asset`), then add Entries (key, type, default, label, exposed flag).
+1. **Draft › Operator Console** — click **Create Config Asset** (creates `Assets/Resources/OperatorConsoleConfig.asset`), then add Entries (key, type, default, label, exposed flag).
 2. Read and write values from code:
 
 ```csharp
@@ -75,7 +75,7 @@ All members are synchronous and must be called from the main thread.
 
 | Member | Description |
 |---|---|
-| `OC.Store` | The active `OCStore`, created lazily from `Resources/DSMConfig.asset` on first access. |
+| `OC.Store` | The active `OCStore`, created lazily from `Resources/OperatorConsoleConfig.asset` on first access. |
 | `OC.Configure(OCConfig config)` | Saves and disposes the current store (if dirty), then creates and loads a new store for `config`. Runtime Panels already created are destroyed and created again from `config`. |
 | `OC.Get<T>(string key)` | Returns the Value for `key`, or `default(T)` if there is neither an Override nor a usable Default. |
 | `OC.Get<T>(string key, T fallback)` | Returns the Value for `key`, or `fallback` if there is neither an Override nor a usable Default. |
@@ -106,7 +106,7 @@ All members are synchronous and must be called from the main thread.
 
 ## Config settings
 
-Set on the `OCConfig` asset (`Assets/Resources/DSMConfig.asset`), either in the Inspector or via
+Set on the `OCConfig` asset (`Assets/Resources/OperatorConsoleConfig.asset`), either in the Inspector or via
 **Draft › Operator Console**:
 
 | Field | Default | Description |
@@ -122,7 +122,7 @@ AutoSave.
 
 ### Save path resolution
 
-- **Save Directory empty** → `Application.persistentDataPath/DSM/`.
+- **Save Directory empty** → `Application.persistentDataPath/OperatorConsole/`.
 - **Save Directory relative** → resolved from the folder containing `Application.dataPath` (next
   to the executable in a build, the project root in the Editor).
 - **Save Directory absolute** → used as-is.
@@ -476,6 +476,18 @@ member yourself.
 The Save File is plain, readable, hand-editable JSON — anyone with file access can read or change
 it. Do not store secrets or player progression you need to protect from tampering; see
 [ADR 0001](docs/adr/0001-scope-to-on-site-settings.md) for the reasoning behind this scope.
+
+## Migrating to 7.0
+
+7.0 drops the last `DSM` names from the defaults. Existing data keeps working:
+
+- The Config is loaded from `Resources/OperatorConsoleConfig.asset`. A Config still named
+  `DSMConfig` loads, with a warning; rename it in the Project window (the GUID, and every
+  reference to it, stays). The old name stops loading in 8.0.
+- With Save Directory empty, the Save File lives in `persistentDataPath/OperatorConsole/`. On first
+  start, a Save File in the old `persistentDataPath/DSM/` folder is moved there, unless one is
+  already there. Tools or people that open the Save File by path need the new folder.
+- A Config with Save Directory set is unaffected.
 
 ## Migrating from DataSaveManager 3.x
 

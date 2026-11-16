@@ -8,7 +8,7 @@ namespace OperatorConsole.Editor
 {
     internal static class OCMenu
     {
-        private const string ConfigPath = "Assets/Resources/DSMConfig.asset";
+        private const string ConfigPath = OCPaths.ConfigAssetPath;
 
         /// <summary>Loads the Resources config asset, creating it (and its folder) first if it doesn't exist yet. Pings/selects it either way.</summary>
         internal static OCConfig CreateConfigAsset()

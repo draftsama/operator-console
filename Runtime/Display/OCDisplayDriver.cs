@@ -125,7 +125,7 @@ namespace OperatorConsole
         private static async UniTask SettleAsync(FullScreenMode mode, int width, int height, CancellationToken token)
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(token);
-            timeout.CancelAfterSlim(TimeSpan.FromSeconds(SettleTimeoutSeconds));
+            using var timer = timeout.CancelAfterSlim(TimeSpan.FromSeconds(SettleTimeoutSeconds));
             try
             {
                 await UniTask.WaitUntil(

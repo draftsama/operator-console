@@ -972,3 +972,51 @@
 .ocp-log-row__detail-scroll .unity-scroller--vertical .unity-repeat-button {
     display: none;
 }
+
+.ocp-display {
+    flex-grow: 1;
+}
+
+.ocp .ocp-display__now {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: rgba(120, 200, 150, 0.1);
+    color: rgb(143, 208, 160);
+}
+
+.ocp .ocp-display__note {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: rgba(232, 196, 106, 0.12);
+    color: rgb(232, 196, 106);
+    white-space: normal;
+}
+
+.ocp .ocp-display__hint {
+    margin: 4px 12px;
+    color: rgba(255, 255, 255, 0.5);
+    white-space: normal;
+}
+
+.ocp-display__modes {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.ocp-display__buttons {
+    flex-direction: row;
+    margin-top: 16px;
+}
+
+.ocp-display__buttons .ocp-button {
+    margin-right: 12px;
+}
+
+.ocp-display__count {
+    -unity-font-style: bold;
+    color: rgb(255, 255, 255);
+    -unity-text-align: middle-center;
+    margin: 8px 0;
+}

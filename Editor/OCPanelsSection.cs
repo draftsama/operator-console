@@ -181,6 +181,7 @@ namespace OperatorConsole.Editor
             var tabs = Section(card.Foldout, "Tabs & Buttons");
             tabs.Add(Field(definition, "_showLog", "Show Log", "Show the Log tab. The Log is kept from app start only when an enabled panel shows it; that is decided when the app starts."));
             tabs.Add(Field(definition, "_showPerformance", "Show Performance", "Show the Performance tab. Performance is measured only when an enabled panel shows it; that is decided when the app starts."));
+            tabs.Add(Field(definition, "_showDisplay", "Show Display", "Show the Display tab: window mode, size, position and monitor. It works in a Windows build only; in the Editor it is shown but read-only."));
             tabs.Add(Field(definition, "_saveButtonMode", "Save Button", null));
 
             var layout = new Foldout { text = "Layout", value = _layoutExpanded[index] };
@@ -259,6 +260,7 @@ namespace OperatorConsole.Editor
             if (definition.Passcode.IsSet) parts.Add("Locked");
             if (definition.ShowLog) parts.Add("Log");
             if (definition.ShowPerformance) parts.Add("Performance");
+            if (definition.ShowDisplay) parts.Add("Display");
             return string.Join("  ·  ", parts);
         }
 

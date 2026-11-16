@@ -13,6 +13,7 @@ public static class OC
     private static OCPanelRegistry? s_panels;
     private static OCLog? s_log;
     private static OCPerformance? s_performance;
+    private static OCDisplay? s_display;
     private static bool s_quittingHooked;
 
     /// <summary>The active store, created lazily from the Resources config on first access.</summary>
@@ -29,6 +30,9 @@ public static class OC
 
     /// <summary>Live frame rate, frame time and memory, measured when an enabled Panel Definition shows the Performance tab.</summary>
     public static OCPerformance Performance => s_performance ??= new OCPerformance();
+
+    /// <summary>The app's window: Display Mode, size, position and monitor. Changes only in a Windows player.</summary>
+    public static OCDisplay Display => s_display ??= new OCDisplay(() => Store);
 
     /// <summary>Overrides the active config: saves and disposes any existing store, then loads a new one.</summary>
     public static void Configure(OCConfig config)
@@ -128,6 +132,7 @@ public static class OC
         s_commands = null;
         s_panels?.Clear();
         s_panels = null;
+        s_display = null;
         OCDiagnostics.Shutdown(s_log, s_performance);
         s_log = null;
         s_performance = null;
@@ -142,5 +147,6 @@ public static class OC
         if (Panels.HasSpawned) return;
         OCDiagnostics.StartTicking(Store.Config, Log, Performance);
         Panels.SpawnAll(Store.Config);
+        Display.ApplyStoredAtStart();
     }
 }

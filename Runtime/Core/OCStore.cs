@@ -263,7 +263,7 @@ namespace OperatorConsole
 
         private void WarnUndefinedOnce(string key)
         {
-            if (!_warnedKeys.Add(key)) return;
+            if (key.StartsWith("oc.", StringComparison.Ordinal) || !_warnedKeys.Add(key)) return;
             Debug.LogWarning($"OC: key '{key}' has no entry definition in the Config.");
         }
 

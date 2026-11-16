@@ -135,6 +135,17 @@ _Avoid_: profiler, profiling, stats
 One measured quantity in **Performance** (e.g. frame time, GC allocation per frame). A **Metric** the running build cannot measure is shown as unavailable, not hidden.
 _Avoid_: counter, stat
 
+**Display**:
+The app's own window on the screen (its **Display Mode**, size, position and monitor), shown to an **Operator** on a **Runtime Panel**. Only available on Windows builds.
+_Avoid_: screen, window, resolution
+
+**Display Mode**:
+How the **Display** is presented: Windowed, Borderless or Full Screen. This "Full Screen" is unrelated to a **Runtime Panel** filling the screen.
+
+**Display Setting**:
+One value of the **Display** an **Operator** sets (mode, size, position, monitor). Persisted as an **Override** under a fixed key of the package; it is not an authored **Entry** and never appears among **Exposed Entries**.
+_Avoid_: display option, resolution setting
+
 ## Relationships
 
 - The **Config** holds zero or more **Entry Definitions**; each defines exactly one **Entry**.
@@ -183,8 +194,15 @@ _Avoid_: counter, stat
 - A **Log Entry** may have no stack trace, when the build does not record one for its type.
 - A **Runtime Panel** shows how many errors arrived since its **Operator** last looked at its **Log**.
 - **Performance** is measured continuously while it is kept, so a **Runtime Panel** opened later shows recent history at once.
+- Each **Panel Definition** chooses whether its **Runtime Panel** shows the **Display**. On a Windows build the **Display** tab works; in the Editor it is shown but inert (read-only, with a note); on other platforms it is not shown.
+- An **Operator** edits **Display Settings** and applies them together. After applying, the **Operator** must confirm within a short time or the previous **Display** is restored; **Overrides** are written only on confirmation.
+- Windowed: size is typed, position is left to the OS. Borderless: size and position are typed. Full Screen: size is chosen from the resolutions the monitor supports, and the monitor is chosen instead of a position.
+- At app start, if **Display Setting** **Overrides** exist, they are applied whether or not any **Runtime Panel** shows the **Display**. With none, the **Display** is left as the app starts it.
+- A **Reset** from the **Display** tab removes every **Display Setting** **Override** (after confirmation) and restores the **Display** the app started with. A **Reset** from the **Settings** tab never touches them.
 
 ## Flagged ambiguities
+
+- "Full Screen" meant both a **Display Mode** and a **Runtime Panel** filling the screen — resolved: the **Display Mode** is Full Screen; the panel behaviour is a layout option of the panel and not a **Display Mode**.
 
 - "Profiler" was used to mean the **Performance** tab — resolved: **Performance**, so it is not confused with the Unity Profiler window.
 

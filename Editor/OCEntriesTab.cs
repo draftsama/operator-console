@@ -185,6 +185,9 @@ namespace OperatorConsole.Editor
             element.FindPropertyRelative("_hasOptions").boolValue = false;
             element.FindPropertyRelative("_options").ClearArray();
             element.FindPropertyRelative("_tagIds").ClearArray();
+            element.FindPropertyRelative("_description").stringValue = string.Empty;
+            element.FindPropertyRelative("_icon").objectReferenceValue = null;
+            element.FindPropertyRelative("_tintIcon").boolValue = true;
             _context.So.ApplyModifiedProperties();
 
             _newKey.SetValueWithoutNotify(string.Empty);

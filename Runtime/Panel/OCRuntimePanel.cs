@@ -588,8 +588,19 @@ namespace OperatorConsole
                 _entryLayoutTargets.Add(new OCEntryActionBar(widget, widget.Field, actions, registry.DisplayTitle, OnEntryActionClicked, error));
             }
 
+            ReserveIconSlots();
             foreach (var target in _entryLayoutTargets) target.ApplyLayout(Layout);
             ApplyRowSpacing(_settingsView);
+        }
+
+        private void ReserveIconSlots()
+        {
+            var anyIcon = false;
+            foreach (var target in _entryLayoutTargets)
+                if (target is OCWidgetRow { HasIcon: true }) { anyIcon = true; break; }
+
+            foreach (var target in _entryLayoutTargets)
+                if (target is OCWidgetRow row) row.ReserveIconSlot(anyIcon);
         }
 
         /// <summary>Lists the Registered Commands this Panel shows on its Commands tab.</summary>

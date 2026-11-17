@@ -24,6 +24,30 @@ namespace OperatorConsole
         [SerializeField] private bool _hasOptions;
         [SerializeField] private List<OCOption> _options = new();
         [SerializeField, FormerlySerializedAs("_audienceIds")] private List<string> _tagIds = new();
+        [SerializeField] private string _description = string.Empty;
+        [SerializeField] private Texture2D? _icon;
+        [SerializeField] private bool _tintIcon = true;
+
+        /// <summary>Text shown under the Label on the Runtime Panel; empty for none.</summary>
+        public string Description
+        {
+            get => _description;
+            set => _description = value;
+        }
+
+        /// <summary>Image shown left of the Label on the Runtime Panel; null for none.</summary>
+        public Texture2D? Icon
+        {
+            get => _icon;
+            set => _icon = value;
+        }
+
+        /// <summary>True draws the Icon in the Label colour (for white glyphs); false keeps its own colours.</summary>
+        public bool TintIcon
+        {
+            get => _tintIcon;
+            set => _tintIcon = value;
+        }
 
         /// <summary>Ids of the Tags this Entry names; empty means it is shared and shown on every Runtime Panel.</summary>
         public List<string> TagIds

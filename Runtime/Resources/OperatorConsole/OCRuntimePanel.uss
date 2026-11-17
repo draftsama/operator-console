@@ -139,10 +139,37 @@
     background-color: rgba(255, 255, 255, 0.06);
 }
 
-.ocp .ocp-label {
+.ocp-label-box {
     flex-shrink: 0;
+    flex-direction: row;
+    align-items: center;
     margin-right: 12px;
+}
+
+.ocp-row--described .ocp-label-box {
+    padding: 8px 0;
+}
+
+.ocp-icon {
+    flex-shrink: 0;
+    margin-right: 10px;
+    -unity-background-scale-mode: scale-to-fit;
+}
+
+.ocp-label-text {
+    flex-grow: 1;
+    flex-shrink: 1;
+    min-width: 0;
+}
+
+.ocp .ocp-label {
     -unity-text-align: middle-left;
+}
+
+.ocp .ocp-description {
+    margin-top: 2px;
+    color: rgb(153, 161, 176);
+    white-space: normal;
 }
 
 .ocp-label--ellipsis {

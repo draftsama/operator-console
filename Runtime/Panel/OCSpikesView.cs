@@ -212,7 +212,10 @@ namespace OperatorConsole
                 chip.Add(Swatch(cause));
                 chip.Add(Cell(OCSpikeStyle.Name(cause), null, SmallScale));
                 chip.Add(Cell(count.ToString(Invariant), "ocp-spike-chip__count", SmallScale));
-                chip.style.height = _layout!.RowHeight * 0.75f;
+                var chipHeight = _layout!.RowHeight * 0.75f;
+                chip.style.height = chipHeight;
+                chip.style.borderTopLeftRadius = chip.style.borderTopRightRadius =
+                    chip.style.borderBottomLeftRadius = chip.style.borderBottomRightRadius = chipHeight / 2f;
                 _filters.Add(chip);
             }
         }
@@ -233,7 +236,7 @@ namespace OperatorConsole
                 row.EnableInClassList("ocp-spike-row--selected", spike == _selected);
                 row.style.height = _layout.RowHeight * 0.8f;
                 row.Add(Cell(spike.Time.ToString("HH:mm:ss.fff", Invariant), "ocp-spike-row__time", SmallScale));
-                var ms = Cell(spike.FrameMs.ToString("0.0", Invariant), "ocp-spike-row__ms", RowScale);
+                var ms = Cell(RowMs(spike.FrameMs), "ocp-spike-row__ms", RowScale);
                 ms.AddToClassList(spike.FrameMs > severe ? "ocp-spike__ms--severe" : "ocp-spike__ms--over");
                 row.Add(ms);
                 var cause = new VisualElement();
@@ -480,6 +483,8 @@ namespace OperatorConsole
         private static string Number(float value) => float.IsNaN(value) ? string.Empty : value.ToString("0.###", Invariant);
 
         private static string Quote(string value) => value.IndexOfAny(new[] { ',', '"', '\n' }) < 0 ? value : "\"" + value.Replace("\"", "\"\"") + "\"";
+
+        private static string RowMs(float ms) => ms.ToString(ms >= 1000f ? "0" : "0.0", Invariant);
 
         private static string Ms(float ms) => float.IsNaN(ms) ? "n/a" : ms.ToString("0.0", Invariant) + " ms";
 

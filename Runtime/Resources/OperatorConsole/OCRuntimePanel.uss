@@ -948,7 +948,6 @@
     margin: 0 6px 6px 0;
     padding: 0 10px;
     border-width: 1px;
-    border-radius: 999px;
     border-color: rgba(255, 255, 255, 0.12);
     background-color: rgba(0, 0, 0, 0);
 }
@@ -1035,36 +1034,44 @@
 }
 
 .ocp .ocp-spike-row Label {
+    flex-shrink: 0;
     margin: 0;
-    padding: 0;
+    padding: 0 6px 0 0;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
     -unity-text-align: middle-left;
 }
 
 .ocp .ocp-spike-row__time {
-    width: 30%;
+    width: 27%;
     color: rgb(153, 161, 176);
 }
 
 .ocp .ocp-spike-row__ms {
-    width: 14%;
+    width: 16%;
     -unity-font-style: bold;
 }
 
 .ocp-spike-row__cause {
     flex-direction: row;
     align-items: center;
-    width: 24%;
+    width: 23%;
+    overflow: hidden;
+}
+
+.ocp .ocp-spike-row__cause Label {
+    flex-shrink: 1;
 }
 
 .ocp .ocp-spike-row__scene {
-    width: 18%;
-    overflow: hidden;
+    width: 19%;
     color: rgb(153, 161, 176);
-    text-overflow: ellipsis;
 }
 
 .ocp .ocp-spike-row .ocp-spike-row__frame {
-    width: 14%;
+    width: 15%;
+    padding: 0;
     color: rgb(153, 161, 176);
     -unity-text-align: middle-right;
 }

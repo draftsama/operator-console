@@ -38,6 +38,12 @@ public static class OC
     /// <summary>How the app renders: Quality Level, frame rate, textures and, with URP, image and shadows. Changes apply at once.</summary>
     public static OCGraphics Graphics => s_graphics ??= new OCGraphics(() => Store, new OCGraphicsBackend());
 
+    /// <summary>
+    /// Times the code inside a <c>using</c> block under <paramref name="name"/>. The Performance tab's Spikes list names the
+    /// slowest block of a spike frame. Works in Release builds. Main thread only; pass a constant string, up to 32 names.
+    /// </summary>
+    public static OCMarkScope Mark(string name) => OCMarks.Begin(name);
+
     /// <summary>Overrides the active config: saves and disposes any existing store, then loads a new one.</summary>
     public static void Configure(OCConfig config)
     {

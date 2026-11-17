@@ -436,9 +436,36 @@ A Metric the build can't measure shows `n/a`. GPU and the most accurate main-thr
 `FrameTimingManager`, which needs **Player Settings › Other Settings › Frame Timing Stats** outside the
 Editor. **Pause** freezes the tab's display; measuring goes on.
 
+**Spikes** — under the graph, every frame longer than twice the **Frame Budget** (33.3 ms at 60 fps)
+is recorded, newest first, up to 100. The graph draws them red over a dashed threshold line.
+
+- Each row shows the time, frame time, likeliest cause, scene and frame number. Chips above the list
+  filter by cause. **Stop** / **Record** pauses recording; **Clear** empties the list.
+- Pick a row (or click a red bar in the graph) to see beside the list where the time went, the frame's
+  CPU, GPU, GC alloc, whether a GC ran, memory change, batches, and the Log lines from one second
+  before to one second after. **Copy Spike** copies it as text.
+- **Save to file** writes every Spike to `<persistentDataPath>/Spikes/spikes-<date>-<time>.csv`.
+- **Cause** — in the Editor and Development builds the frame is split by Unity's own Profiler markers
+  (Scripts, Physics, Animation, Rendering, UI, Loading, GC, Wait GPU), and the biggest slice names the
+  cause; a GC or Loading slice over a quarter of the frame wins. Work outside those markers, such as
+  Editor hitches, shows as **Other**. Release builds strip the markers, so the cause falls back to GC
+  (a collection ran), Loading (a scene loaded), GPU (GPU time above CPU time), or CPU.
+- **Your own code** — wrap a block in `OC.Mark` to have it named on the Spike, in any build:
+
+  ```csharp
+  using (OC.Mark("ProductCardSpawner.SpawnAll"))
+  {
+      SpawnAll();
+  }
+  ```
+
+  Main thread only. Pass a constant string; up to 32 names are tracked.
+- After a Spike, the next 3 frames are skipped so one slow load doesn't fill the list.
+
 From code: `OC.Log` (`CopyTo`, `InfoCount` / `WarningCount` / `ErrorCount`, `Clear()`, and `Changed`,
 raised on the main thread) and `OC.Performance` (`CurrentFps`, `AverageFps`, `OnePercentLowFps`,
-`LatestFrameMs`, memory and render counters). `OCRuntimePanel.SelectLog()` / `SelectPerformance()` /
+`LatestFrameMs`, memory and render counters, and `Spikes`, an `OCSpikeRecorder` with `ThresholdMs`,
+`IsRecording`, `Spikes` and `Clear()`). `OCRuntimePanel.SelectLog()` / `SelectPerformance()` /
 `SelectTab(OCPanelTab)` switch tabs. A panel remembers its last tab while the app runs.
 
 ### Graphics

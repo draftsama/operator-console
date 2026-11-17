@@ -809,7 +809,7 @@ namespace OperatorConsole
             _settingsView = ScrollView();
             _commandsView = ScrollView();
             _logView = new OCLogView(OC.Log);
-            _performanceView = new OCPerformanceView(OC.Performance);
+            _performanceView = new OCPerformanceView(OC.Performance, OC.Log);
             _card.Add(_settingsView);
             _card.Add(_commandsView);
             _displayView = new OCDisplayView(OC.Display, OpenConfirmDialog);

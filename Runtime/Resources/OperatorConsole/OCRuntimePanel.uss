@@ -899,6 +899,319 @@
     margin-top: 14px;
 }
 
+.ocp-perf__key--spike {
+    height: 2px;
+    background-color: rgb(227, 87, 77);
+}
+
+.ocp-spikes {
+    margin-top: 14px;
+}
+
+.ocp-spikes__head {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 6px;
+}
+
+.ocp-spikes__dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 6px 0 12px;
+    border-radius: 4px;
+    background-color: rgb(227, 87, 77);
+}
+
+.ocp-spikes__dot--off {
+    background-color: rgb(110, 118, 132);
+}
+
+.ocp .ocp-spikes__rec,
+.ocp .ocp-spikes__status {
+    color: rgb(153, 161, 176);
+}
+
+.ocp .ocp-spikes__status {
+    margin-bottom: 6px;
+    white-space: normal;
+}
+
+.ocp-spikes__filters {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+}
+
+.ocp .ocp-spike-chip {
+    flex-direction: row;
+    align-items: center;
+    margin: 0 6px 6px 0;
+    padding: 0 10px;
+    border-width: 1px;
+    border-radius: 999px;
+    border-color: rgba(255, 255, 255, 0.12);
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ocp .ocp-spike-chip:hover:enabled {
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.ocp .ocp-spike-chip--off {
+    opacity: 0.4;
+}
+
+.ocp .ocp-spike-chip Label {
+    margin-right: 6px;
+    color: rgb(238, 240, 244);
+}
+
+.ocp .ocp-spike-chip .ocp-spike-chip__count {
+    margin-right: 0;
+    color: rgb(153, 161, 176);
+}
+
+.ocp-spikes__body {
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: flex-start;
+}
+
+.ocp-spikes__list {
+    flex-grow: 1.15;
+    flex-basis: 380px;
+    min-width: 300px;
+    overflow: hidden;
+    margin: 0 12px 12px 0;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: rgba(255, 255, 255, 0.1);
+}
+
+.ocp-scroll .ocp-spikes__scroll .unity-scroll-view__content-container {
+    padding: 0;
+}
+
+.ocp-spikes__detail {
+    flex-grow: 1;
+    flex-basis: 340px;
+    min-width: 280px;
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-width: 1px;
+    border-radius: 10px;
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.ocp-spike-row {
+    flex-direction: row;
+    align-items: center;
+    flex-shrink: 0;
+    padding: 0 10px;
+    border-bottom-width: 1px;
+    border-color: rgba(255, 255, 255, 0.05);
+}
+
+.ocp-spike-row:hover {
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.ocp-spike-row--selected,
+.ocp-spike-row--selected:hover {
+    background-color: rgba(63, 123, 224, 0.18);
+}
+
+.ocp-spike-row--head,
+.ocp-spike-row--head:hover {
+    height: 26px;
+    border-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.ocp .ocp-spike-row--head Label {
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 1px;
+}
+
+.ocp .ocp-spike-row Label {
+    margin: 0;
+    padding: 0;
+    -unity-text-align: middle-left;
+}
+
+.ocp .ocp-spike-row__time {
+    width: 30%;
+    color: rgb(153, 161, 176);
+}
+
+.ocp .ocp-spike-row__ms {
+    width: 14%;
+    -unity-font-style: bold;
+}
+
+.ocp-spike-row__cause {
+    flex-direction: row;
+    align-items: center;
+    width: 24%;
+}
+
+.ocp .ocp-spike-row__scene {
+    width: 18%;
+    overflow: hidden;
+    color: rgb(153, 161, 176);
+    text-overflow: ellipsis;
+}
+
+.ocp .ocp-spike-row .ocp-spike-row__frame {
+    width: 14%;
+    color: rgb(153, 161, 176);
+    -unity-text-align: middle-right;
+}
+
+.ocp .ocp-spike__ms--over {
+    color: rgb(224, 179, 64);
+}
+
+.ocp .ocp-spike__ms--severe {
+    color: rgb(227, 87, 77);
+}
+
+.ocp .ocp-spikes__empty {
+    padding: 24px 12px;
+    color: rgb(153, 161, 176);
+    white-space: normal;
+    -unity-text-align: middle-center;
+}
+
+.ocp-spike-detail__head {
+    flex-direction: row;
+    align-items: center;
+}
+
+.ocp .ocp-spike-detail__ms {
+    margin-right: 14px;
+    -unity-font-style: bold;
+}
+
+.ocp .ocp-spike-detail__sub {
+    margin-bottom: 10px;
+    color: rgb(153, 161, 176);
+    white-space: normal;
+}
+
+.ocp .ocp-spike-detail__caption {
+    margin: 10px 0 6px 0;
+    color: rgba(255, 255, 255, 0.45);
+    letter-spacing: 1.5px;
+}
+
+.ocp-spike-detail__bar {
+    flex-direction: row;
+    height: 14px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.06);
+}
+
+.ocp-spike-detail__segment {
+    height: 100%;
+}
+
+.ocp-spike-detail__budget {
+    position: absolute;
+    top: -3px;
+    bottom: -3px;
+    width: 1px;
+    background-color: rgba(238, 240, 244, 0.7);
+}
+
+.ocp-spike-detail__legend {
+    flex-direction: row;
+    flex-wrap: wrap;
+    margin-top: 8px;
+}
+
+.ocp-spike-detail__legend-row {
+    flex-direction: row;
+    align-items: center;
+    width: 48%;
+    margin-right: 2%;
+}
+
+.ocp .ocp-spike-detail__legend-value {
+    color: rgb(153, 161, 176);
+}
+
+.ocp .ocp-spike-detail__legend-value--top {
+    color: rgb(238, 240, 244);
+    -unity-font-style: bold;
+}
+
+.ocp .ocp-spike-detail__note,
+.ocp .ocp-spike-detail__locked {
+    margin-top: 8px;
+    color: rgb(153, 161, 176);
+    white-space: normal;
+}
+
+.ocp .ocp-spike-detail__locked {
+    padding: 8px 10px;
+    border-width: 1px;
+    border-radius: 6px;
+    border-color: rgba(255, 255, 255, 0.12);
+}
+
+.ocp-spike-detail__grid {
+    flex-direction: row;
+    flex-wrap: wrap;
+}
+
+.ocp-spike-detail__value {
+    width: 48%;
+    margin: 0 2% 6px 0;
+    padding: 6px 8px;
+    border-radius: 6px;
+    background-color: rgba(255, 255, 255, 0.035);
+}
+
+.ocp .ocp-spike-detail__value-text {
+    -unity-font-style: bold;
+}
+
+.ocp-spike-detail__log {
+    padding: 8px 10px;
+    border-radius: 6px;
+    background-color: rgba(0, 0, 0, 0.25);
+}
+
+.ocp .ocp-spike-detail__log-line {
+    color: rgb(153, 161, 176);
+    white-space: normal;
+}
+
+.ocp .ocp-spike-detail__log-line--warning {
+    color: rgb(224, 179, 64);
+}
+
+.ocp .ocp-spike-detail__log-line--error {
+    color: rgb(227, 87, 77);
+}
+
+.ocp .ocp-spike-detail__log-line--spike {
+    color: rgb(238, 240, 244);
+    background-color: rgba(227, 87, 77, 0.18);
+}
+
+.ocp-spike-detail__actions {
+    flex-direction: row;
+    margin-top: 10px;
+}
+
+.ocp .ocp-spike-detail__actions .ocp-button {
+    margin: 0;
+}
+
+
 .ocp-perf__grid {
     flex-direction: row;
     flex-wrap: wrap;

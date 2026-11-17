@@ -22,11 +22,15 @@ namespace OperatorConsole
 
         public float LatestMs => _count == 0 ? 0f : _frameMs[(_head + Capacity - 1) % Capacity];
 
+        /// <summary>Time.frameCount of the newest kept frame, or -1 when not given.</summary>
+        public int LatestFrame { get; private set; } = -1;
+
         public float LatestCpuMs => _count == 0 ? float.NaN : _cpuMs[(_head + Capacity - 1) % Capacity];
 
         /// <param name="cpuMs">Main-thread time of the frame, or NaN when unknown.</param>
-        public void Push(float frameMs, float cpuMs)
+        public void Push(float frameMs, float cpuMs, int frame = -1)
         {
+            LatestFrame = frame;
             _frameMs[_head] = frameMs;
             _cpuMs[_head] = cpuMs;
             _head = (_head + 1) % Capacity;

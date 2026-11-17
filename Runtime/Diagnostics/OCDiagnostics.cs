@@ -19,7 +19,7 @@ namespace OperatorConsole
         public static bool AnyPanelShowsPerformance(OCConfig config)
         {
             foreach (var panel in config.Panels)
-                if (panel.Enabled && panel.ShowPerformance) return true;
+                if (panel.Enabled && (panel.ShowPerformance || panel.ShowGraphics)) return true;
             return false;
         }
 

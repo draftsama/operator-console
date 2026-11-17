@@ -14,6 +14,7 @@ public static class OC
     private static OCLog? s_log;
     private static OCPerformance? s_performance;
     private static OCDisplay? s_display;
+    private static OCGraphics? s_graphics;
     private static bool s_quittingHooked;
 
     /// <summary>The active store, created lazily from the Resources config on first access.</summary>
@@ -33,6 +34,9 @@ public static class OC
 
     /// <summary>The app's window: Display Mode, size, position and monitor. Changes only in a Windows player.</summary>
     public static OCDisplay Display => s_display ??= new OCDisplay(() => Store);
+
+    /// <summary>How the app renders: Quality Level, frame rate, textures and, with URP, image and shadows. Changes apply at once.</summary>
+    public static OCGraphics Graphics => s_graphics ??= new OCGraphics(() => Store, new OCGraphicsBackend());
 
     /// <summary>Overrides the active config: saves and disposes any existing store, then loads a new one.</summary>
     public static void Configure(OCConfig config)
@@ -135,6 +139,7 @@ public static class OC
         s_panels?.Clear();
         s_panels = null;
         s_display = null;
+        s_graphics = null;
         OCDiagnostics.Shutdown(s_log, s_performance);
         s_log = null;
         s_performance = null;
@@ -150,5 +155,19 @@ public static class OC
         OCDiagnostics.StartTicking(Store.Config, Log, Performance);
         Panels.SpawnAll(Store.Config);
         Display.ApplyStoredAtStart();
+        Graphics.ApplyStoredAtStart();
+#if UNITY_EDITOR
+        Application.quitting -= RestoreGraphicsInEditor;
+        Application.quitting += RestoreGraphicsInEditor;
+#endif
     }
+
+#if UNITY_EDITOR
+    // Quality and pipeline settings changed in Play mode persist into the project in the Editor.
+    private static void RestoreGraphicsInEditor()
+    {
+        Application.quitting -= RestoreGraphicsInEditor;
+        s_graphics?.RestoreStartup();
+    }
+#endif
 }

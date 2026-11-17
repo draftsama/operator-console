@@ -146,6 +146,21 @@ How the **Display** is presented: Windowed, Borderless or Full Screen. This "Ful
 One value of the **Display** an **Operator** sets (mode, size, position, monitor). Persisted as an **Override** under a fixed key of the package; it is not an authored **Entry** and never appears among **Exposed Entries**.
 _Avoid_: display option, resolution setting
 
+**Graphics**:
+How the app renders on the machine it is installed on (quality level, frame rate, image and shadow quality), tuned by an **Operator** on a **Runtime Panel** so that machine keeps its frame rate. Separate from the **Display**, which is only the app's window.
+_Avoid_: display, video settings, quality settings
+
+**Graphics Setting**:
+One value of **Graphics** an **Operator** sets (e.g. quality level, VSync, render scale). Persisted as an **Override** under a fixed key of the package; like a **Display Setting**, it is not an authored **Entry** and never appears among **Exposed Entries**.
+_Avoid_: graphics option, quality option
+
+**Quality Level**:
+The **Graphics Setting** that picks one of the app's authored quality presets. It is the baseline the other **Graphics Settings** fine-tune.
+_Avoid_: preset, quality tier
+
+**Custom**:
+What a **Runtime Panel** shows for the **Quality Level** while any **Graphics Setting** that follows it has an **Override**: the baseline has been fine-tuned. Frame-rate settings do not make it **Custom**.
+
 ## Relationships
 
 - The **Config** holds zero or more **Entry Definitions**; each defines exactly one **Entry**.
@@ -185,7 +200,7 @@ _Avoid_: display option, resolution setting
 - One **Entry** may have several **Entry Actions**. While any of them runs, that **Entry**'s row on the **Runtime Panel** is locked: no other of its **Entry Actions** and no typing.
 - An **Entry Action** may require confirmation, like a **Command**. It keeps running when the **Runtime Panel** closes and is stopped when its owner unregisters, like a **Command**. Two owners giving one **Entry** an **Entry Action** with the same **Title** are told apart by owner, like **Commands**.
 
-- The **Log** and **Performance** are kept from app start only when at least one enabled **Panel Definition** shows them; otherwise nothing is kept or measured.
+- The **Log** and **Performance** are kept from app start only when at least one enabled **Panel Definition** shows them (for **Performance**, shows it or shows **Graphics**); otherwise nothing is kept or measured.
 - Each **Panel Definition** chooses whether its **Runtime Panel** shows the **Log** and whether it shows **Performance**.
 - The **Log** and **Performance** are available in every build, not only development builds.
 - There is one **Log** per app, shared by every **Runtime Panel**: clearing it from one **Runtime Panel** clears it for all.
@@ -193,12 +208,21 @@ _Avoid_: display option, resolution setting
 - A **Log Entry** identical to the one just before it (same type, message and stack trace) is counted on that one instead of added; identical **Log Entries** further apart stay separate, so the **Log** keeps its order.
 - A **Log Entry** may have no stack trace, when the build does not record one for its type.
 - A **Runtime Panel** shows how many errors arrived since its **Operator** last looked at its **Log**.
+- A **Runtime Panel** that shows **Graphics** also needs **Performance** kept, for the live frame rate shown above the **Graphics Settings**.
 - **Performance** is measured continuously while it is kept, so a **Runtime Panel** opened later shows recent history at once.
 - Each **Panel Definition** chooses whether its **Runtime Panel** shows the **Display**. On a Windows build the **Display** tab works; in the Editor it is shown but inert (read-only, with a note); on other platforms it is not shown.
 - An **Operator** edits **Display Settings** and applies them together. After applying, the **Operator** must confirm within a short time or the previous **Display** is restored; **Overrides** are written only on confirmation.
 - Windowed: size is typed, position is left to the OS. Borderless: size and position are typed. Full Screen: size is chosen from the resolutions the monitor supports, and the monitor is chosen instead of a position.
 - At app start, if **Display Setting** **Overrides** exist, they are applied whether or not any **Runtime Panel** shows the **Display**. With none, the **Display** is left as the app starts it.
 - A **Reset** from the **Display** tab removes every **Display Setting** **Override** (after confirmation) and restores the **Display** the app started with. A **Reset** from the **Settings** tab never touches them.
+- Each **Panel Definition** chooses whether its **Runtime Panel** shows **Graphics**.
+- A **Graphics Setting** takes effect and becomes an **Override** as soon as the **Operator** changes it; there is no apply-and-confirm step as for the **Display**.
+- Some **Graphics Settings** exist only when the app renders with URP; in an app that does not, they are not shown.
+- Effects and options specific to one app (post-processing, field of view) are not **Graphics Settings**; the app defines them as its own **Entries**.
+- Changing the **Quality Level** removes the **Overrides** of every other **Graphics Setting** except the frame-rate ones (VSync, Target FPS), so they follow the new baseline; frame-rate settings keep their **Values** and **Overrides** across a **Quality Level** change.
+- At app start, **Graphics Setting** **Overrides** are applied after the app's own startup values, whether or not any **Runtime Panel** shows **Graphics**. A **Graphics Setting** with no **Override** is left as the app set it (e.g. the app's own frame-rate cap stays the baseline).
+- A **Reset** from the **Graphics** tab removes every **Graphics Setting** **Override** (after confirmation) and restores **Graphics** as the app started. A **Reset** from the **Settings** tab or the **Display** tab never touches them.
+- **Graphics** works in the Editor as in a build, and changing it never changes the project's own assets.
 
 ## Flagged ambiguities
 

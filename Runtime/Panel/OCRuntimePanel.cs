@@ -23,7 +23,8 @@ namespace OperatorConsole
         Commands,
         Log,
         Performance,
-        Display
+        Display,
+        Graphics
     }
 
     /// <summary>The in-game UI where an operator views and edits Exposed Entries and runs Commands and Entry Actions while the app runs. Created from a Panel Definition; see <see cref="OC.Panels"/>.</summary>
@@ -34,6 +35,7 @@ namespace OperatorConsole
         private const string ResetConfirmButtonText = "Reset";
         private const float TitleScale = 1.2f;
         private const float PillScale = 0.65f;
+        private const float AppInfoScale = 0.8f;
         private const float TabInset = 8f;
         private const float FooterButtonExtra = 6f;
         private static readonly Vector2Int ReferenceResolution = new(1920, 1080);
@@ -53,6 +55,7 @@ namespace OperatorConsole
         private VisualElement? _card;
         private Label? _title;
         private Label? _pill;
+        private Label? _appInfo;
         private VisualElement? _tabBar;
         private Button? _settingsTab;
         private Button? _commandsTab;
@@ -60,11 +63,13 @@ namespace OperatorConsole
         private Label? _logBadge;
         private Button? _performanceTab;
         private Button? _displayTab;
+        private Button? _graphicsTab;
         private ScrollView? _settingsView;
         private ScrollView? _commandsView;
         private OCLogView? _logView;
         private OCPerformanceView? _performanceView;
         private OCDisplayView? _displayView;
+        private OCGraphicsView? _graphicsView;
         private Button? _saveButton;
         private Button? _resetButton;
         private Button? _closeButton;
@@ -239,6 +244,10 @@ namespace OperatorConsole
             {
                 _displayView!.Refresh();
             }
+            else if (_tab == OCPanelTab.Graphics)
+            {
+                _graphicsView!.Refresh();
+            }
             UpdateLogBadge();
         }
 
@@ -330,6 +339,7 @@ namespace OperatorConsole
             _tab = _rememberedTab is { } remembered && IsAvailable(remembered) ? remembered : DefaultTab();
             ApplyTabs();
             if (_tab == OCPanelTab.Display) _displayView!.Reload();
+            if (_tab == OCPanelTab.Graphics) _graphicsView!.Reload();
             _card!.style.display = DisplayStyle.Flex;
             _visible = true;
             SetOpen(true);
@@ -359,6 +369,8 @@ namespace OperatorConsole
 
         public void SelectDisplay() => SelectTab(OCPanelTab.Display);
 
+        public void SelectGraphics() => SelectTab(OCPanelTab.Graphics);
+
         /// <summary>The tab shown while the panel is open.</summary>
         public OCPanelTab SelectedTab => _tab;
 
@@ -370,6 +382,7 @@ namespace OperatorConsole
             _tab = tab;
             ApplyTabs();
             if (tab == OCPanelTab.Display) _displayView!.Reload();
+            if (tab == OCPanelTab.Graphics) _graphicsView!.Reload();
         }
 
         private bool IsAvailable(OCPanelTab tab) => tab switch
@@ -378,13 +391,14 @@ namespace OperatorConsole
             OCPanelTab.Log         => Definition.ShowLog,
             OCPanelTab.Performance => Definition.ShowPerformance,
             OCPanelTab.Display     => Definition.ShowDisplay && OCDisplay.IsTabAvailable,
+            OCPanelTab.Graphics    => Definition.ShowGraphics,
             _                       => true
         };
 
         private OCPanelTab DefaultTab()
         {
             if (_shownEntryCount > 0) return OCPanelTab.Settings;
-            foreach (var tab in new[] { OCPanelTab.Commands, OCPanelTab.Log, OCPanelTab.Performance, OCPanelTab.Display })
+            foreach (var tab in new[] { OCPanelTab.Commands, OCPanelTab.Log, OCPanelTab.Performance, OCPanelTab.Display, OCPanelTab.Graphics })
                 if (IsAvailable(tab)) return tab;
             return OCPanelTab.Settings;
         }
@@ -398,22 +412,26 @@ namespace OperatorConsole
             var hasLog = IsAvailable(OCPanelTab.Log);
             var hasPerformance = IsAvailable(OCPanelTab.Performance);
             var hasDisplay = IsAvailable(OCPanelTab.Display);
-            SetShown(_tabBar, hasCommands || hasLog || hasPerformance || hasDisplay);
+            var hasGraphics = IsAvailable(OCPanelTab.Graphics);
+            SetShown(_tabBar, hasCommands || hasLog || hasPerformance || hasDisplay || hasGraphics);
             SetShown(_commandsTab, hasCommands);
             SetShown(_logTab, hasLog);
             SetShown(_performanceTab, hasPerformance);
             SetShown(_displayTab, hasDisplay);
+            SetShown(_graphicsTab, hasGraphics);
 
             _settingsTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Settings);
             _commandsTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Commands);
             _logTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Log);
             _performanceTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Performance);
             _displayTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Display);
+            _graphicsTab!.EnableInClassList("ocp-tab--selected", _tab == OCPanelTab.Graphics);
             SetShown(_settingsView, _tab == OCPanelTab.Settings);
             SetShown(_commandsView, _tab == OCPanelTab.Commands);
             SetShown(_logView, _tab == OCPanelTab.Log);
             SetShown(_performanceView, _tab == OCPanelTab.Performance);
             SetShown(_displayView, _tab == OCPanelTab.Display);
+            SetShown(_graphicsView, _tab == OCPanelTab.Graphics);
             SetShown(_resetButton, _tab == OCPanelTab.Settings);
             ApplySaveButtonMode();
 
@@ -542,6 +560,7 @@ namespace OperatorConsole
             _logView!.ApplyLayout(Layout);
             _performanceView!.ApplyLayout(Layout);
             _displayView!.ApplyLayout(Layout);
+            _graphicsView!.ApplyLayout(Layout);
             ApplyTabs();
         }
 
@@ -673,7 +692,8 @@ namespace OperatorConsole
 
             _title!.style.fontSize = layout.FontSize * TitleScale;
             _pill!.style.fontSize = layout.FontSize * PillScale;
-            foreach (var tab in new[] { _settingsTab!, _commandsTab!, _logTab!, _performanceTab!, _displayTab! })
+            _appInfo!.style.fontSize = layout.FontSize * AppInfoScale;
+            foreach (var tab in new[] { _settingsTab!, _commandsTab!, _logTab!, _performanceTab!, _displayTab!, _graphicsTab! })
             {
                 tab.style.height = layout.TabHeight - TabInset;
                 tab.style.fontSize = layout.FontSize;
@@ -755,8 +775,14 @@ namespace OperatorConsole
             _title.AddToClassList("ocp-title");
             _pill = new Label(Definition.Name);
             _pill.AddToClassList("ocp-pill");
+            var headSpacer = new VisualElement();
+            headSpacer.AddToClassList("ocp-grow");
+            _appInfo = new Label($"{Application.productName}  v{Application.version}");
+            _appInfo.AddToClassList("ocp-app-info");
             head.Add(_title);
             head.Add(_pill);
+            head.Add(headSpacer);
+            head.Add(_appInfo);
             _card.Add(head);
 
             _tabBar = new VisualElement();
@@ -776,6 +802,8 @@ namespace OperatorConsole
             _displayTab = TabButton("Display", SelectDisplay);
             _tabBar.Add(_performanceTab);
             _tabBar.Add(_displayTab);
+            _graphicsTab = TabButton("Graphics", SelectGraphics);
+            _tabBar.Add(_graphicsTab);
             _card.Add(_tabBar);
 
             _settingsView = ScrollView();
@@ -788,6 +816,8 @@ namespace OperatorConsole
             _card.Add(_logView);
             _card.Add(_performanceView);
             _card.Add(_displayView);
+            _graphicsView = new OCGraphicsView(OC.Graphics, OC.Performance, OpenConfirmDialog);
+            _card.Add(_graphicsView);
 
             var footer = new VisualElement();
             footer.AddToClassList("ocp-foot");
@@ -833,11 +863,13 @@ namespace OperatorConsole
             SetShown(_logView, false);
             SetShown(_performanceView, false);
             SetShown(_displayView, false);
+            SetShown(_graphicsView, false);
             SetShown(_logBadge, false);
             ApplyPanelLayout();
             _logView.ApplyLayout(Layout);
             _performanceView.ApplyLayout(Layout);
             _displayView.ApplyLayout(Layout);
+            _graphicsView.ApplyLayout(Layout);
             ApplySaveButtonMode();
             return true;
         }

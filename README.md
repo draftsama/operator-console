@@ -441,6 +441,41 @@ raised on the main thread) and `OC.Performance` (`CurrentFps`, `AverageFps`, `On
 `LatestFrameMs`, memory and render counters). `OCRuntimePanel.SelectLog()` / `SelectPerformance()` /
 `SelectTab(OCPanelTab)` switch tabs. A panel remembers its last tab while the app runs.
 
+### Graphics
+
+An optional tab, turned on per Panel Definition with **Show Graphics**, where an operator tunes how
+the app renders on this machine. See [ADR 0012](docs/adr/0012-graphics-with-optional-urp.md).
+
+- Every change applies at once and becomes an Override, so it is applied again on the next start.
+  **Reset** removes them and returns to how the app started.
+- **Quality Level** lists the levels in **Project Settings › Quality** enabled for the current
+  platform. Picking one drops the fine-tuning but keeps VSync and Target FPS.
+- Image and Shadows settings need URP. In the Editor they change a runtime copy of the URP asset, so
+  the project's own asset is never modified.
+
+**Quality Level templates** — `QualityLevels/` holds a Low / Medium / High set of URP assets with
+their own renderers. They reference nothing outside this package, so any URP project can use them:
+
+| | Low | Medium | High |
+|---|---|---|---|
+| Render scale | 75% | 100% | 100% |
+| HDR | off | on | on |
+| Shadow distance / resolution / cascades | 25 m / 1024 / 1 | 40 m / 2048 / 2 | 50 m / 2048 / 4 |
+| Soft and additional-light shadows | off | on | on |
+| SSAO | off (`Low_Renderer`) | on (`Default_Renderer`) | on (`Default_Renderer`) |
+
+To use them in a project:
+
+1. Copy the three `*_RPAsset` files into the project's own settings folder (for example with
+   **Edit › Duplicate**), so tuning them doesn't change this package. Assign a Volume Profile or
+   renderer there if the project needs its own post-processing or renderer features.
+2. In **Project Settings › Quality**, add a Low, Medium and High level, set each level's
+   **Render Pipeline Asset** to its copy, and tick only the platforms that should offer it.
+3. Pick the platform's default level in the same table.
+
+Texture Quality, Anisotropic Filtering and LOD Bias live on the Quality level itself, not in these
+assets; set them per level in step 2.
+
 ## Binding
 
 A no-code, one-way link from an Entry's Value to one or more members of components on the same GameObject —

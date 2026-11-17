@@ -49,6 +49,12 @@
     -unity-text-align: middle-center;
 }
 
+.ocp .ocp-app-info {
+    margin-left: 16px;
+    color: rgba(255, 255, 255, 0.45);
+    -unity-text-align: middle-right;
+}
+
 .ocp-tabs {
     flex-shrink: 0;
     flex-direction: row;
@@ -1019,4 +1025,87 @@
     color: rgb(255, 255, 255);
     -unity-text-align: middle-center;
     margin: 8px 0;
+}
+
+.ocp-graphics {
+    flex-grow: 1;
+}
+
+.ocp .ocp-graphics__now {
+    margin-bottom: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    background-color: rgba(120, 200, 150, 0.1);
+    color: rgb(143, 208, 160);
+}
+
+.ocp .ocp-graphics__now--slow {
+    background-color: rgba(232, 196, 106, 0.12);
+    color: rgb(232, 196, 106);
+}
+
+.ocp .ocp-graphics__note {
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    border-radius: 8px;
+    background-color: rgba(232, 196, 106, 0.12);
+    color: rgb(232, 196, 106);
+    white-space: normal;
+}
+
+.ocp-graphics__mark {
+    flex-shrink: 0;
+    width: 7px;
+    height: 7px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.ocp-graphics__mark--on {
+    background-color: rgb(159, 194, 255);
+}
+
+.ocp-graphics__inline {
+    flex-direction: row;
+    flex-grow: 1;
+    align-items: center;
+}
+
+.ocp-graphics__segments {
+    flex-direction: row;
+    flex-grow: 1;
+}
+
+.ocp .ocp-graphics__custom {
+    flex-shrink: 0;
+    margin-left: 10px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    background-color: rgba(110, 163, 245, 0.12);
+    color: rgb(159, 194, 255);
+    -unity-font-style: bold;
+    letter-spacing: 0.5px;
+}
+
+.ocp .ocp-graphics__value {
+    flex-shrink: 0;
+    width: 64px;
+    margin-left: 10px;
+    -unity-text-align: middle-right;
+}
+
+.ocp-graphics__buttons {
+    flex-direction: row;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.ocp-graphics__buttons > .ocp-button {
+    margin-left: 0;
+    margin-right: 12px;
+}
+
+.ocp .ocp-graphics__count {
+    color: rgba(255, 255, 255, 0.5);
 }

@@ -29,6 +29,8 @@ namespace OperatorConsole
         private bool _showPerformance;
         [SerializeField, Tooltip("Show the Display tab: the app's window mode, size, position and monitor. Works in a Windows build only.")]
         private bool _showDisplay;
+        [SerializeField, Tooltip("Show the Graphics tab: Quality Level, frame rate, textures and, with URP, image and shadow settings. Changes apply at once.")]
+        private bool _showGraphics;
         [SerializeField] private OCPanelLayout _layout = new();
 
         public OCPanelDefinition() { }
@@ -56,6 +58,7 @@ namespace OperatorConsole
         public bool ShowLog => _showLog;
         public bool ShowPerformance => _showPerformance;
         public bool ShowDisplay => _showDisplay;
+        public bool ShowGraphics => _showGraphics;
         public OCPanelLayout Layout => _layout;
     }
 }

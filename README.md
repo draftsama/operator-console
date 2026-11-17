@@ -151,7 +151,7 @@ A UI Toolkit window with a sidebar for its four sections. It follows the Editor'
 
 - **Entries** — one row per Entry Definition: type, key and label, default value, current value
   (a dot marks an Override), and Reset. Click a row's key to show its settings: key, type, label,
-  Exposed, Slider (Int/Float), Dropdown Options (Int), Header and Tag, plus Remove Entry.
+  Exposed, Description, Icon, Slider (Int/Float), Dropdown Options (Int), Header and Tag, plus Remove Entry.
   Duplicate keys are highlighted and reported. Drag a row by its handle to reorder it — that order
   is the Runtime Panel order (reordering is off while searching). **Search** filters by key or
   label; **View as** dims the Entries that Tag's Runtime Panel would not show.
@@ -173,6 +173,9 @@ quit).
 An in-game UI for an operator to view and edit Exposed Entries while the app runs.
 
 The Color widget takes a hex code (`#RGB`, `#RRGGBB`, or `#RRGGBBAA`; the leading `#` is optional).
+Clicking its swatch opens a colour picker over the panel: a saturation/value square, hue and alpha
+bars, a code field, and the last eight colours applied this session. The Value changes only on
+**Apply**; Cancel, Esc or a tap outside leave it alone.
 
 1. In the Operator Console window, open **Runtime Panels** and press **+ Add Panel**. Each enabled
    **Panel Definition** becomes one Runtime Panel when the app starts; nothing goes in a scene.
@@ -280,6 +283,13 @@ open panel immediately.
 - **Log Stack Trace Font Size** — the full message and stack trace of an expanded Log Entry.
 - **Performance Graph Height**, **Frame Budget (ms)** — the frame time graph on the Performance tab, and
   the dashed budget line drawn on it (16.67 ms is 60 fps). Frames over the budget are drawn in amber.
+
+### Descriptions and icons
+
+An Exposed Entry can carry a **Description**, shown under its label, and an **Icon** (a `Texture2D`)
+shown left of it. With **Tint** on, the icon is drawn in the label colour, which suits white glyphs;
+with it off, the icon keeps its own colours. When any row on a Runtime Panel has an icon, rows
+without one keep an empty gap so labels line up. Both are presentation only.
 
 ### Headers
 

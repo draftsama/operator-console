@@ -26,6 +26,8 @@ namespace OperatorConsole
             _store = store;
             Key = entry.Key;
             SetLabel(entry.DisplayLabel);
+            SetDescription(entry.Description);
+            SetIcon(entry.Icon, entry.TintIcon);
 
             OnSetup(entry);
 

@@ -42,6 +42,14 @@ _Avoid_: choice, item, enum value
 An optional title on an **Exposed Entry**, shown on the **Runtime Panel** directly above that **Entry**'s row to start a visual group. Presentation only; it has no effect on the **Value**.
 _Avoid_: section, category, group
 
+**Entry Description**:
+Optional text on an **Exposed Entry**, shown on the **Runtime Panel** under its **Label** to explain the setting to the **Operator**. Presentation only.
+_Avoid_: help text, tooltip, hint
+
+**Entry Icon**:
+An optional image on an **Exposed Entry**, shown on the **Runtime Panel** left of its **Label**, either tinted to the **Label** colour or in its own colours. When any row on a **Runtime Panel** has one, rows without one keep an empty gap so **Labels** line up. Presentation only.
+_Avoid_: glyph, sprite, symbol
+
 **Operator**:
 A person on site who uses a **Runtime Panel** to view and change **Entries** and run **Commands**.
 _Avoid_: user, admin, player
@@ -59,7 +67,7 @@ The **Tags** a **Runtime Panel** filters by right now. They start as its **Defau
 _Avoid_: current tags, runtime tags, selected tags
 
 **Presentation Hint**:
-A **Range**, set of **Options**, **Header**, or set of **Tags** on an **Exposed Entry**. It changes how and where the **Runtime Panel** shows the **Entry**, never its **Value**.
+A **Range**, set of **Options**, **Header**, **Entry Description**, **Entry Icon**, or set of **Tags** on an **Exposed Entry**. It changes how and where the **Runtime Panel** shows the **Entry**, never its **Value**.
 _Avoid_: widget setting, UI option
 
 **Runtime Panel**:

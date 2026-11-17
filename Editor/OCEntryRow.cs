@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json;
 using UnityEditor;
 using UnityEditor.UIElements;
+using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace OperatorConsole.Editor
@@ -186,6 +187,23 @@ namespace OperatorConsole.Editor
             }
             detail.Add(exposedRow);
             if (!exposedOn) return detail;
+
+            var descriptionRow = DetailRow();
+            var description = new TextField("Description") { multiline = true, tooltip = "Shown under the Label in the Runtime Panel. Empty: none." };
+            description.BindProperty(Prop("_description"));
+            description.AddToClassList("oc-grow");
+            descriptionRow.Add(description);
+            detail.Add(descriptionRow);
+
+            var iconRow = DetailRow();
+            var icon = new ObjectField("Icon") { objectType = typeof(Texture2D), allowSceneObjects = false, tooltip = "Shown left of the Label in the Runtime Panel. Empty: none." };
+            icon.BindProperty(Prop("_icon"));
+            icon.AddToClassList("oc-grow");
+            var tint = new Toggle("Tint") { tooltip = "Draw the Icon in the Label colour (for white glyphs). Off: keep the Icon's own colours." };
+            tint.BindProperty(Prop("_tintIcon"));
+            iconRow.Add(icon);
+            iconRow.Add(tint);
+            detail.Add(iconRow);
 
             if (OCPresentation.AllowsRange(type)) detail.Add(BuildRange());
             if (OCPresentation.AllowsOptions(type)) detail.Add(BuildOptions());

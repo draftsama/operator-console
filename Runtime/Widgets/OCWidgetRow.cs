@@ -18,7 +18,8 @@ namespace OperatorConsole
         private readonly VisualElement _icon;
         private readonly Label _label;
         private readonly Label _description;
-        private bool _iconSlotReserved;
+        private float _iconSlot;
+        private float _iconHeight;
         private bool _hasIcon;
 
         protected OCWidgetRow()
@@ -50,7 +51,7 @@ namespace OperatorConsole
             Add(Field);
 
             SetDescription(string.Empty);
-            SetIcon(null, true);
+            SetIcon(null, true, 0f);
         }
 
         /// <summary>The part of the row right of the label, where the widget and its Entry Action buttons go.</summary>
@@ -61,10 +62,13 @@ namespace OperatorConsole
         /// <summary>Shows <paramref name="entry"/> and commits edits to it through <paramref name="store"/>.</summary>
         public abstract void Setup(OCEntryDefinition entry, OCStore store);
 
-        /// <summary>Keeps an empty icon-sized gap when this row has no icon, so labels line up with rows that do.</summary>
-        public void ReserveIconSlot(bool reserve)
+        /// <summary>Icon height for <paramref name="layout"/>: the Entry's own height, or 1.4× the font size when it has none.</summary>
+        public float IconHeightFor(OCPanelLayout layout) => _iconHeight > 0f ? _iconHeight : layout.FontSize * IconScale;
+
+        /// <summary>Gives the icon a column <paramref name="width"/> wide, kept as an empty gap when this row has no icon, so labels line up; 0 for no column.</summary>
+        public void ReserveIconSlot(float width)
         {
-            _iconSlotReserved = reserve;
+            _iconSlot = width;
             UpdateIconDisplay();
         }
 
@@ -82,9 +86,10 @@ namespace OperatorConsole
             EnableInClassList("ocp-row--described", has);
         }
 
-        protected void SetIcon(Texture2D? icon, bool tint)
+        protected void SetIcon(Texture2D? icon, bool tint, float height)
         {
             _hasIcon = icon != null;
+            _iconHeight = Mathf.Max(0f, height);
             _icon.style.backgroundImage = icon != null ? new StyleBackground(icon) : new StyleBackground(StyleKeyword.None);
             _icon.style.unityBackgroundImageTintColor = tint ? LabelColor : Color.white;
             UpdateIconDisplay();
@@ -93,7 +98,7 @@ namespace OperatorConsole
         private void UpdateIconDisplay()
         {
             var has = _hasIcon;
-            _icon.style.display = has || _iconSlotReserved ? DisplayStyle.Flex : DisplayStyle.None;
+            _icon.style.display = has || _iconSlot > 0f ? DisplayStyle.Flex : DisplayStyle.None;
             _icon.style.visibility = has ? Visibility.Visible : Visibility.Hidden;
         }
 
@@ -110,9 +115,9 @@ namespace OperatorConsole
             _label.EnableInClassList("ocp-label--ellipsis", !wrap);
             _description.style.fontSize = layout.FontSize * DescriptionScale;
 
-            var iconSize = layout.FontSize * IconScale;
-            _icon.style.width = iconSize;
-            _icon.style.height = iconSize;
+            var iconHeight = IconHeightFor(layout);
+            _icon.style.height = _hasIcon ? iconHeight : 0f;
+            _icon.style.width = Mathf.Max(_iconSlot, _hasIcon ? iconHeight : 0f);
 
             var inputHeight = layout.RowHeight - InputInset;
             this.Query(className: "unity-base-text-field__input").ForEach(input => input.style.height = inputHeight);

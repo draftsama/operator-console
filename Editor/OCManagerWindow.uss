@@ -219,10 +219,12 @@
 }
 .oc-detail-row { margin: 2px 0; flex-wrap: wrap; }
 .oc-detail-row > * { margin-right: 10px; }
-.oc-detail-row .unity-base-field__label { min-width: 64px; width: 64px; color: var(--oc-muted); }
+.oc-detail-row .unity-base-field__label { min-width: 84px; width: 84px; color: var(--oc-muted); }
 .oc-detail-row > Toggle { flex-shrink: 0; }
 .oc-compact-field { width: 150px; }
-.oc-option { padding-left: 74px; }
+.oc-option { padding-left: 94px; }
+.oc-textarea { align-items: flex-start; }
+.oc-textarea > .unity-base-text-field__input { min-height: 56px; white-space: normal; -unity-text-align: upper-left; }
 .oc-option__value { width: 70px; flex-shrink: 0; }
 .oc-field--error .unity-base-field__input,
 .oc-field--error .unity-base-text-field__input { border-color: var(--oc-danger); }

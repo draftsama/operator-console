@@ -184,6 +184,14 @@ namespace OperatorConsole.Editor
                 label.BindProperty(Prop("_label"));
                 label.AddToClassList("oc-grow");
                 exposedRow.Add(label);
+
+                var hasHeader = new Toggle("Header") { tooltip = "Show a title above this Entry in the Runtime Panel." };
+                hasHeader.BindProperty(Prop("_hasHeader"));
+                _headerText = new TextField();
+                _headerText.BindProperty(Prop("_header"));
+                _headerText.AddToClassList("oc-grow");
+                exposedRow.Add(hasHeader);
+                exposedRow.Add(_headerText);
             }
             detail.Add(exposedRow);
             if (!exposedOn) return detail;
@@ -192,6 +200,7 @@ namespace OperatorConsole.Editor
             var description = new TextField("Description") { multiline = true, tooltip = "Shown under the Label in the Runtime Panel. Empty: none." };
             description.BindProperty(Prop("_description"));
             description.AddToClassList("oc-grow");
+            description.AddToClassList("oc-textarea");
             descriptionRow.Add(description);
             detail.Add(descriptionRow);
 
@@ -201,22 +210,16 @@ namespace OperatorConsole.Editor
             icon.AddToClassList("oc-grow");
             var tint = new Toggle("Tint") { tooltip = "Draw the Icon in the Label colour (for white glyphs). Off: keep the Icon's own colours." };
             tint.BindProperty(Prop("_tintIcon"));
+            var iconHeight = new FloatField("Height") { isDelayed = true, tooltip = "Icon height in panel pixels. 0: 1.4× the panel font size." };
+            iconHeight.BindProperty(Prop("_iconHeight"));
+            iconHeight.AddToClassList("oc-compact-field");
             iconRow.Add(icon);
+            iconRow.Add(iconHeight);
             iconRow.Add(tint);
             detail.Add(iconRow);
 
             if (OCPresentation.AllowsRange(type)) detail.Add(BuildRange());
             if (OCPresentation.AllowsOptions(type)) detail.Add(BuildOptions());
-
-            var headerRow = DetailRow();
-            var hasHeader = new Toggle("Header") { tooltip = "Show a title above this Entry in the Runtime Panel." };
-            hasHeader.BindProperty(Prop("_hasHeader"));
-            _headerText = new TextField();
-            _headerText.BindProperty(Prop("_header"));
-            _headerText.AddToClassList("oc-grow");
-            headerRow.Add(hasHeader);
-            headerRow.Add(_headerText);
-            detail.Add(headerRow);
 
             if (_context.TagNames.Length > 0)
             {

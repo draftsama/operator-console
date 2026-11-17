@@ -288,8 +288,9 @@ open panel immediately.
 
 An Exposed Entry can carry a **Description**, shown under its label, and an **Icon** (a `Texture2D`)
 shown left of it. With **Tint** on, the icon is drawn in the label colour, which suits white glyphs;
-with it off, the icon keeps its own colours. When any row on a Runtime Panel has an icon, rows
-without one keep an empty gap so labels line up. Both are presentation only.
+with it off, the icon keeps its own colours. **Height** sets the icon height in panel pixels; 0 sizes
+it at 1.4× the panel font size. When any row on a Runtime Panel has an icon, every row gets an icon
+column as wide as the tallest icon, so labels line up. Both are presentation only.
 
 ### Headers
 

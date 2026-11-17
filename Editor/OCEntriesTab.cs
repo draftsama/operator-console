@@ -188,6 +188,7 @@ namespace OperatorConsole.Editor
             element.FindPropertyRelative("_description").stringValue = string.Empty;
             element.FindPropertyRelative("_icon").objectReferenceValue = null;
             element.FindPropertyRelative("_tintIcon").boolValue = true;
+            element.FindPropertyRelative("_iconHeight").floatValue = 0f;
             _context.So.ApplyModifiedProperties();
 
             _newKey.SetValueWithoutNotify(string.Empty);

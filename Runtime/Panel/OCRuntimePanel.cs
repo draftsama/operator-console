@@ -614,12 +614,12 @@ namespace OperatorConsole
 
         private void ReserveIconSlots()
         {
-            var anyIcon = false;
+            var slot = 0f;
             foreach (var target in _entryLayoutTargets)
-                if (target is OCWidgetRow { HasIcon: true }) { anyIcon = true; break; }
+                if (target is OCWidgetRow { HasIcon: true } row) slot = Mathf.Max(slot, row.IconHeightFor(Layout));
 
             foreach (var target in _entryLayoutTargets)
-                if (target is OCWidgetRow row) row.ReserveIconSlot(anyIcon);
+                if (target is OCWidgetRow row) row.ReserveIconSlot(slot);
         }
 
         /// <summary>Lists the Registered Commands this Panel shows on its Commands tab.</summary>

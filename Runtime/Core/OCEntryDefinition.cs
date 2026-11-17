@@ -27,6 +27,7 @@ namespace OperatorConsole
         [SerializeField] private string _description = string.Empty;
         [SerializeField] private Texture2D? _icon;
         [SerializeField] private bool _tintIcon = true;
+        [SerializeField, Min(0f)] private float _iconHeight;
 
         /// <summary>Text shown under the Label on the Runtime Panel; empty for none.</summary>
         public string Description
@@ -47,6 +48,13 @@ namespace OperatorConsole
         {
             get => _tintIcon;
             set => _tintIcon = value;
+        }
+
+        /// <summary>Icon height in panel pixels; 0 sizes it from the font (1.4× the font size).</summary>
+        public float IconHeight
+        {
+            get => _iconHeight;
+            set => _iconHeight = Mathf.Max(0f, value);
         }
 
         /// <summary>Ids of the Tags this Entry names; empty means it is shared and shown on every Runtime Panel.</summary>

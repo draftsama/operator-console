@@ -173,6 +173,9 @@ quit).
 An in-game UI for an operator to view and edit Exposed Entries while the app runs.
 
 The Color widget takes a hex code (`#RGB`, `#RRGGBB`, or `#RRGGBBAA`; the leading `#` is optional).
+Clicking its swatch opens a colour picker over the panel: a saturation/value square, hue and alpha
+bars, a code field, and the last eight colours applied this session. The Value changes only on
+**Apply**; Cancel, Esc or a tap outside leave it alone.
 
 1. In the Operator Console window, open **Runtime Panels** and press **+ Add Panel**. Each enabled
    **Panel Definition** becomes one Runtime Panel when the app starts; nothing goes in a scene.

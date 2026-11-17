@@ -8,6 +8,7 @@ namespace OperatorConsole
     internal static class OCDiagnostics
     {
         private static Ticker? s_ticker;
+        private static FrameStart? s_frameStart;
 
         public static bool AnyPanelShowsLog(OCConfig config)
         {
@@ -39,6 +40,8 @@ namespace OperatorConsole
 
             if (s_ticker != null) return;
             s_ticker = new Ticker(log, performance);
+            s_frameStart = new FrameStart(performance);
+            PlayerLoopHelper.AddAction(PlayerLoopTiming.Initialization, s_frameStart);
             PlayerLoopHelper.AddAction(PlayerLoopTiming.PostLateUpdate, s_ticker);
         }
 
@@ -47,7 +50,25 @@ namespace OperatorConsole
             log?.StopCapture();
             performance?.StopMeasuring();
             if (s_ticker != null) s_ticker.Stopped = true;
+            if (s_frameStart != null) s_frameStart.Stopped = true;
             s_ticker = null;
+            s_frameStart = null;
+        }
+
+        private sealed class FrameStart : IPlayerLoopItem
+        {
+            private readonly OCPerformance _performance;
+
+            public FrameStart(OCPerformance performance) => _performance = performance;
+
+            public bool Stopped { get; set; }
+
+            public bool MoveNext()
+            {
+                if (Stopped) return false;
+                _performance.BeginFrame();
+                return true;
+            }
         }
 
         private sealed class Ticker : IPlayerLoopItem

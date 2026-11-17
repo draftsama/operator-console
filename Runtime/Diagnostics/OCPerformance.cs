@@ -4,6 +4,7 @@ using System;
 using Unity.Profiling;
 using UnityEngine;
 using UnityEngine.Profiling;
+using UnityEngine.SceneManagement;
 
 namespace OperatorConsole
 {
@@ -24,11 +25,25 @@ namespace OperatorConsole
         private ProfilerRecorder _setPassCalls;
         private ProfilerRecorder _triangles;
         private float _gpuMs = float.NaN;
+        private readonly OCFrameMarkers _markers = new();
+        private int _gcCount;
+        private long _memory;
+        private int _sceneLoads;
+        private int _sceneLoadsSeen;
+        private bool _lastFrameGc;
+        private long _lastFrameMemoryChange;
+        private bool _lastFrameSceneLoaded;
 
         /// <summary>True while frames are being measured.</summary>
         public bool IsMeasuring { get; private set; }
 
         internal OCFrameStats Frames => _frames;
+
+        /// <summary>Frames over the Spike threshold, recorded while measuring.</summary>
+        public OCSpikeRecorder Spikes { get; } = new();
+
+        /// <summary>True when Spikes are split by <see cref="OCFrameCategory"/>: in the Editor and Development builds only.</summary>
+        public bool HasFrameBreakdown => OCFrameMarkers.Available;
 
         /// <summary>True when the build reports GPU and main-thread times through <see cref="FrameTimingManager"/>; needs Frame Timing Stats in Player Settings outside the Editor.</summary>
         public bool FrameTimingAvailable => FrameTimingManager.IsFeatureEnabled();
@@ -77,6 +92,10 @@ namespace OperatorConsole
             _batches = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Batches Count");
             _setPassCalls = ProfilerRecorder.StartNew(ProfilerCategory.Render, "SetPass Calls Count");
             _triangles = ProfilerRecorder.StartNew(ProfilerCategory.Render, "Triangles Count");
+            _markers.Start();
+            _gcCount = GC.CollectionCount(0);
+            _memory = Profiler.GetTotalAllocatedMemoryLong();
+            SceneManager.sceneLoaded += OnSceneLoaded;
         }
 
         internal void StopMeasuring()
@@ -88,6 +107,23 @@ namespace OperatorConsole
             _batches.Dispose();
             _setPassCalls.Dispose();
             _triangles.Dispose();
+            _markers.Stop();
+            SceneManager.sceneLoaded -= OnSceneLoaded;
+        }
+
+        /// <summary>Closes the totals of the frame that just ended. Called once per frame, first in the player loop.</summary>
+        internal void BeginFrame()
+        {
+            if (!IsMeasuring) return;
+            var gcCount = GC.CollectionCount(0);
+            _lastFrameGc = gcCount != _gcCount;
+            _gcCount = gcCount;
+            var memory = Profiler.GetTotalAllocatedMemoryLong();
+            _lastFrameMemoryChange = memory - _memory;
+            _memory = memory;
+            _lastFrameSceneLoaded = _sceneLoads != _sceneLoadsSeen;
+            _sceneLoadsSeen = _sceneLoads;
+            OCMarks.EndFrame();
         }
 
         /// <summary>Records the frame that just ended. Called once per frame, late in the player loop.</summary>
@@ -110,8 +146,35 @@ namespace OperatorConsole
             if (float.IsNaN(cpuMs) && _mainThread.Valid && _mainThread.LastValue > 0)
                 cpuMs = _mainThread.LastValue / NanosecondsPerMillisecond;
 
-            _frames.Push(Time.unscaledDeltaTime * 1000f, cpuMs);
+            var frameMs = Time.unscaledDeltaTime * 1000f;
+            _frames.Push(frameMs, cpuMs, Time.frameCount - 1);
+            if (Spikes.Tick(frameMs)) RecordSpike(frameMs, cpuMs);
         }
+
+        private void RecordSpike(float frameMs, float cpuMs)
+        {
+            var spike = new OCSpike
+            {
+                Time = DateTime.Now,
+                Frame = Time.frameCount - 1,
+                FrameMs = frameMs,
+                CpuMs = cpuMs,
+                GpuMs = _gpuMs,
+                GcAllocatedBytes = Read(_gcAllocated),
+                GcCollected = _lastFrameGc,
+                MemoryChangeBytes = _lastFrameMemoryChange,
+                Batches = Read(_batches),
+                SetPassCalls = Read(_setPassCalls),
+                Scene = SceneManager.GetActiveScene().name,
+                SceneLoaded = _lastFrameSceneLoaded,
+                MarkName = OCMarks.LastFrameTopName,
+                MarkMs = OCMarks.LastFrameTopMs
+            };
+            spike.HasBreakdown = _markers.Read(spike.CategoryTimes);
+            Spikes.Add(spike);
+        }
+
+        private void OnSceneLoaded(Scene scene, LoadSceneMode mode) => _sceneLoads++;
 
         private static long Read(ProfilerRecorder recorder) => recorder.Valid ? recorder.LastValue : -1;
     }

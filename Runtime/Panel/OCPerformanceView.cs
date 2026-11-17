@@ -7,7 +7,7 @@ using UnityEngine.UIElements;
 
 namespace OperatorConsole
 {
-    /// <summary>The Runtime Panel's Performance tab: frame rate summary, frame time graph, and Frame / Memory / Rendering Metrics.</summary>
+    /// <summary>The Runtime Panel's Performance tab: frame rate summary, frame time graph, Spikes, and Frame / Memory / Rendering Metrics.</summary>
     internal sealed class OCPerformanceView : VisualElement, IOCLayoutAware
     {
         private const float TextInterval = 0.25f;
@@ -25,6 +25,7 @@ namespace OperatorConsole
         private readonly Button _pause;
         private readonly Button _resetWorst;
         private readonly OCFrameGraph _graph;
+        private readonly OCSpikesView _spikes;
         private readonly OCMetricCell _frameTime = new("Frame time");
         private readonly OCMetricCell _cpu = new("CPU main thread");
         private readonly OCMetricCell _gpu = new("GPU");
@@ -43,7 +44,7 @@ namespace OperatorConsole
         private float _nextText;
         private float _nextGraph;
 
-        public OCPerformanceView(OCPerformance performance)
+        public OCPerformanceView(OCPerformance performance, OCLog log)
         {
             _performance = performance;
             AddToClassList("ocp-perf");
@@ -80,6 +81,11 @@ namespace OperatorConsole
             content.Add(_graph);
             content.Add(Legend());
 
+            _spikes = new OCSpikesView(performance, log);
+            _graph.FrameClicked += _spikes.SelectNear;
+            _spikes.SelectedFrameChanged += _graph.SetHighlight;
+            content.Add(_spikes);
+
             content.Add(Section("Frame", _frameTime, _cpu, _gpu, _gcAlloc));
             _forceGc = SmallButton("Force GC", () =>
             {
@@ -111,6 +117,8 @@ namespace OperatorConsole
             }
             _graph.style.height = layout.PerformanceGraphHeight;
             _graph.SetBudget(layout.FrameBudgetMs, layout.FontSize * 0.65f);
+            _spikes.ApplyLayout(layout);
+            _graph.SetSpikeThreshold(_performance.Spikes.ThresholdMs);
             UpdateText();
         }
 
@@ -128,6 +136,7 @@ namespace OperatorConsole
             {
                 _nextText = now + TextInterval;
                 UpdateText();
+                _spikes.Refresh();
             }
         }
 
@@ -210,6 +219,7 @@ namespace OperatorConsole
             legend.Add(Key("Rest of frame", "ocp-perf__key--rest"));
             legend.Add(Key("Over budget", "ocp-perf__key--over"));
             legend.Add(Key("Budget", "ocp-perf__key--budget"));
+            legend.Add(Key("Spike", "ocp-perf__key--spike"));
             return legend;
         }
 

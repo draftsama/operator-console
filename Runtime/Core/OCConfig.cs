@@ -81,6 +81,8 @@ namespace OperatorConsole
 
         public bool RemoveEntry(string key) => _entries.RemoveAll(e => e.Key == key) > 0;
 
+        internal void AddEntryForTests(OCEntryDefinition entry) => _entries.Add(entry);
+
         internal void AddTagForTests(OCTag tag) => _tags.Add(tag);
 
         internal void AddPanelForTests(OCPanelDefinition definition) => _panels.Add(definition);

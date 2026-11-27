@@ -89,10 +89,8 @@ namespace OperatorConsole.Tests
         [Test]
         public void DuplicateKeys_FindsDuplicateKeys()
         {
-            var config = NewConfig(
-                Entry("dup", OCDataType.Int),
-                Entry("dup", OCDataType.Float),
-                Entry("unique", OCDataType.Bool));
+            var config = NewConfig(Entry("dup", OCDataType.Int), Entry("unique", OCDataType.Bool));
+            config.AddEntryForTests(Entry("dup", OCDataType.Float));
 
             var duplicates = OCEntryRules.DuplicateKeys(config);
 

@@ -12,7 +12,6 @@ namespace OperatorConsole
     internal sealed class OCLogView : VisualElement, IOCLayoutAware
     {
         private const float RefreshInterval = 0.2f;
-        private const float BottomTolerance = 2f;
         private const int TypeCount = 3;
         private const float EstimatedRowHeight = 44f;
         internal const int MaxRepeatRows = 20;
@@ -34,6 +33,7 @@ namespace OperatorConsole
         private readonly VisualElement _empty = new();
         private readonly Label _emptyTitle = new();
         private readonly Label _emptyText = new();
+        private readonly OCLogScrollState _scroll = new();
 
         private OCPanelLayout? _layout;
         private OCLogEntry? _expanded;
@@ -66,7 +66,7 @@ namespace OperatorConsole
             spacer.AddToClassList("ocp-grow");
             second.Add(spacer);
             _copyAll = ToolbarButton("Copy all", null, CopyAll);
-            _clear = ToolbarButton("Clear", "ocp-button--danger", _log.Clear);
+            _clear = ToolbarButton("Clear", "ocp-button--danger", ClearLog);
             second.Add(_copyAll);
             second.Add(_clear);
             Add(second);
@@ -79,6 +79,13 @@ namespace OperatorConsole
             };
             _list.AddToClassList("ocp-log__list");
             _listScroll = _list.Q<ScrollView>();
+            _listScroll.verticalScroller.slider.RegisterValueChangedCallback(e =>
+                _scroll.Observe(ViewportHeight, e.newValue, _listScroll.verticalScroller.highValue));
+            _list.RegisterCallback<GeometryChangedEvent>(_ =>
+            {
+                if (_scroll.TakePendingRefresh(ViewportHeight)) ShowRows(true);
+            });
+            _listScroll.contentContainer.RegisterCallback<GeometryChangedEvent>(_ => KeepNewestInView());
             Add(_list);
 
             _empty.AddToClassList("ocp-log__empty");
@@ -108,7 +115,7 @@ namespace OperatorConsole
             _emptyText.style.fontSize = layout.FontSize * 0.8f;
             _listScroll.verticalScroller.style.width = layout.ScrollbarWidth;
             _listScroll.mouseWheelScrollSize = layout.ScrollSensitivity;
-            _list.RefreshItems();
+            if (_scroll.TryRefreshNow(ViewportHeight)) ShowRows();
         }
 
         /// <summary>Shows the Log's latest state when it changed, at most a few times a second unless <paramref name="force"/>.</summary>
@@ -119,15 +126,39 @@ namespace OperatorConsole
             _shownVersion = version;
             _nextRefresh = Time.unscaledTime + RefreshInterval;
 
-            var scroller = _listScroll.verticalScroller;
-            var atBottom = scroller.value >= scroller.highValue - BottomTolerance;
-
             _log.CopyTo(_entries);
             if (_expanded != null && !_entries.Contains(_expanded)) _expanded = null;
             BuildRows();
+            if (_rows.Count == 0) _scroll.FollowNewest();
             UpdateCounts();
+            if (_scroll.TryRefreshNow(ViewportHeight)) ShowRows();
+        }
+
+        private float ViewportHeight => _listScroll.contentViewport.layout.height;
+
+        private void ShowRows(bool restoreOffset = false)
+        {
             _list.RefreshItems();
-            if (atBottom && _rows.Count > 0) _list.ScrollToItem(-1);
+            if (_rows.Count == 0) return;
+            if (_scroll.FollowsNewest) _list.ScrollToItem(-1);
+            else if (restoreOffset) _list.schedule.Execute(RestoreOffset);
+        }
+
+        private void RestoreOffset()
+        {
+            if (!_scroll.FollowsNewest) _listScroll.verticalScroller.value = _scroll.Offset;
+        }
+
+        private void KeepNewestInView()
+        {
+            var scroller = _listScroll.verticalScroller;
+            if (_scroll.FollowsNewest && _rows.Count > 0 && scroller.value < scroller.highValue) scroller.value = scroller.highValue;
+        }
+
+        private void ClearLog()
+        {
+            _log.Clear();
+            Refresh(true);
         }
 
         private void BuildRows()
